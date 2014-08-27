@@ -45,5 +45,18 @@ add_library(elphelphg
   xml.cpp
 )
 
+install (TARGETS elphelphg DESTINATION lib)
+install (FILES
+  cameraArray.hpp
+  camera.hpp
+  channel.hpp
+  eqrData.hpp
+  file.hpp
+  imagej_elphel_preferences.hpp
+  sensorData.hpp
+  utils.hpp
+  xml.hpp
+  DESTINATION include/elphelphg)
+
 set(CONFIGURED_ONCE TRUE CACHE INTERNAL
     "A flag showing that CMake has configured at least once.")
