@@ -33,7 +33,7 @@
 #ifndef EQRDATA_HPP_
 #define EQRDATA_HPP_
 
-#include "xml.hpp"
+class Xml;
 
 class EqrData {
   Xml *xmlData;
