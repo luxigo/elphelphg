@@ -41,7 +41,7 @@ ImageJ_Elphel_Preferences::ImageJ_Elphel_Preferences(const char *path) {
 	this->calibtiff_prefix = this->getString(
 			"CORRECTION_PARAMETERS.sensorPrefix");
 	this->calibtiff_suffix = this->getString(
-			"CORRECTION_PARAMETERS.sensorPrefix");
+			"CORRECTION_PARAMETERS.sensorSuffix");
 	this->eqrtiff_dir = this->getString(
 			"CORRECTION_PARAMETERS.equirectangularDirectory");
 	this->eqrtiff_prefix = this->getString(
@@ -65,10 +65,10 @@ ImageJ_Elphel_Preferences::ImageJ_Elphel_Preferences(const char *path) {
 
 std::string ImageJ_Elphel_Preferences::getString(const char *key) {
 	return this->xmlData->getString(
-			(std::string("/properties//entry[key=") + key + "]").c_str());
+			(std::string("/properties/entry[@key=\"") + key + "\"]").c_str());
 }
 
 double ImageJ_Elphel_Preferences::getDouble(const char *key) {
 	return this->xmlData->getDouble(
-			(std::string("/properties//entry[ key=") + key + "]").c_str());
+			(std::string("/properties/entry[@key=\"") + key + "\"]").c_str());
 }
