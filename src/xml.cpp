@@ -56,8 +56,9 @@ Xml::Xml(const char *filename) {
 double Xml::getDouble(const char *expr) {
   xmlXPathObjectPtr obj;
   obj=xmlXPathEvalExpression((xmlChar*)expr, ctx);
-  if(obj == NULL || obj->type!=XPATH_NODESET) {
-      throw "Xml::eval: unable to evaluate xpath expression "+std::string(expr);
+  if(obj == NULL || xmlXPathNodeSetIsEmpty(obj->nodesetval)) {
+    xmlXPathFreeObject(obj);
+    throw "Xml::eval: unable to evaluate xpath expression "+std::string(expr);
   }
   double ret=xmlXPathCastNodeSetToNumber(obj->nodesetval);
   xmlXPathFreeObject(obj);
@@ -67,8 +68,9 @@ double Xml::getDouble(const char *expr) {
 std::string Xml::getString(const char *expr) {
   xmlXPathObjectPtr obj;
   obj=xmlXPathEvalExpression((xmlChar*)expr, ctx);
-  if(obj == NULL || obj->type!=XPATH_NODESET) {
-      throw "Xml::eval: unable to evaluate xpath expression "+std::string(expr);
+  if(obj==NULL || xmlXPathNodeSetIsEmpty(obj->nodesetval)){
+    xmlXPathFreeObject(obj);
+    throw "Xml::eval: unable to evaluate xpath expression "+std::string(expr);
   }
   const unsigned char *stringval=xmlXPathCastNodeSetToString(obj->nodesetval);
   std::string ret((const char*)stringval);
