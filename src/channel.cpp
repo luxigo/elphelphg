@@ -61,12 +61,12 @@ Channel::Channel(CameraArray *array, unsigned int num) {
   }
 
   // get sensor data
-  this->calibtiff=prefs->calibtiff_prefix+utils::to_string(num,2)+prefs->calibtiff_suffix;
-  this->sd=new SensorData(this->calibtiff.c_str());
+  this->calibtiff=prefs->calibtiff_dir+"/"+prefs->calibtiff_prefix+utils::to_string(num,2)+prefs->calibtiff_suffix;
+  this->sd=new SensorData((this->calibtiff+".xml").c_str());
 
   // get eqr data
-  this->eqrtiff=prefs->eqrtiff_prefix+utils::to_string(num,2)+prefs->eqrtiff_suffix;
-  this->eqr=new EqrData(this->eqrtiff.c_str());
+  this->eqrtiff=prefs->eqrtiff_dir+"/"+prefs->eqrtiff_prefix+utils::to_string(num,2)+prefs->eqrtiff_suffix;
+  this->eqr=new EqrData((this->eqrtiff+".xml").c_str());
 
   this->getRotation();
   this->getLensCenterVector();
