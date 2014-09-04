@@ -75,9 +75,10 @@ public:
   void getRotation();
   void getKinv();
   void getLensCenterVector();
-  void interpolateSubPix(cimg_library::CImg<float> &img,double (&value)[2], int order, double u, double v);
-
 };
+
+void interpolateSubPix(cimg_library::CImg<float> &calib,double (&value)[2], int order, double u, double v);
+double phi(int order, double u, double v, int i, int j);
 
 
 #endif /* CHANNEL_HPP_ */

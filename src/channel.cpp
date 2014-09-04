@@ -143,7 +143,7 @@ void Channel::getEQRPrincipalPoint(double *x0, double *y0) {
     }
 	  for(int i(0); i<9; ++i){
 		  double value[2] = {0,0};
-		  this->interpolateSubPix(*this->calibtiff_cimg,value,n,patch[2*i],patch[2*i+1]);
+		  interpolateSubPix(*this->calibtiff_cimg,value,n,patch[2*i],patch[2*i+1]);
 		  map[2*i]   = value[0]-sd->px0;
 		  map[2*i+1] = value[1]-sd->py0;
 	  }
@@ -322,4 +322,35 @@ void Channel::getLensCenterVector(){
   lensCenterVector[1]=result.val[1];
   lensCenterVector[2]=result.val[2];
 
+}
+
+void interpolateSubPix(CImg<float> &calib,double (&value)[2], int order, double u, double v){
+
+	int u0 = floor(u);
+	int v0 = floor(v);
+
+	for(int i(0); i< order; ++i)
+		for( int j(0); j< order; ++j){
+			value[0] += phi(order,u,v,u0+i-order/2,v0+j-order/2)*calib(u0+i-order/2,v0+j-order/2,0,0);
+			value[1] += phi(order,u,v,u0+i-order/2,v0+j-order/2)*calib(u0+i-order/2,v0+j-order/2,1,0);
+		}
+}
+
+double phi(int order, double u, double v, int i, int j){
+
+	double value=1.0;
+
+	int u0 = floor(u);
+	int v0 = floor(v);
+
+	for(int k(0); k< order; ++k)
+		if( (u0+k-order/2) != i ){
+		   value *= (u-u0-k+order/2) / ( (double) (u0+k-i-order/2) );
+		}
+
+	for(int l(0); l< order; ++l)
+		if( (v0+l-order/2) != j )
+			value *= (v-v0-l+order/2)/ ( (double) (v0+l-j-order/2) ) ;
+
+	return value;
 }
