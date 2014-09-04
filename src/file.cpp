@@ -57,4 +57,5 @@
     delete content;
     throw "file read error: "+this->path;
   }
+  this->length=length;
 }
