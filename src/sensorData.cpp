@@ -34,7 +34,7 @@
 
 SensorData::SensorData(const char *path) {
   xmlData=new Xml(path);
-  subCamera=get("subCamera");
+  subCamera=get("subcamera");
   channel=get("channel");
   pixelSize=get("pixelSize");
   radius=get("radius");
