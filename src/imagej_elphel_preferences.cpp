@@ -61,15 +61,14 @@ ImageJ_Elphel_Preferences::ImageJ_Elphel_Preferences(const char *path) {
     this->channel_subchannel[chan]=(int)this->getDouble(
       (std::string("CAMERAS.channelMap_")+utils::to_string(chan)+"_subchannel").c_str());
   }
-
 }
 
 std::string ImageJ_Elphel_Preferences::getString(const char *key) {
 	return this->xmlData->getString(
-			(std::string("/properties/entry [ key=\"") + key + "\" ]").c_str());
+			(std::string("/properties//entry[key=") + key + "]").c_str());
 }
 
 double ImageJ_Elphel_Preferences::getDouble(const char *key) {
 	return this->xmlData->getDouble(
-			(std::string("/properties/entry [ key=\"") + key + "\" ]").c_str());
+			(std::string("/properties//entry[ key=") + key + "]").c_str());
 }
