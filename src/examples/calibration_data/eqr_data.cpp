@@ -13,8 +13,14 @@ int main(int argc, char **argv) {
   try {
   CameraArray e4pi(CameraArray::EYESIS4PI_CAMERA,argv[1]);
   std::cout << argv[2] << ": " << e4pi.channel(atoi(argv[3]))->eqr->get(argv[2]) << std::endl;
-  } catch(std::exception& e) {
+  } catch(std::exception &e) {
     std::cerr << e.what() << std::endl;
+    return 1;
+  } catch(std::string &msg) {
+    std::cerr << msg << std::endl;
+    return 1;
+  } catch(...) {
+    std::cerr << "unhandled exception\n";
     return 1;
   }
 }
