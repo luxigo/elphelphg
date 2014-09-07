@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 project(ElphelPHG C CXX)
 
 set(CMAKE_CXX_COMPILER g++)
+set(BUILD_SHARED_LIBS ON)
 
 find_package(Threads)
 
@@ -68,7 +69,11 @@ find_library(LIBTIFF_LIBRARY NAMES tiff libtiff
   HINTS ${PC_LIBTIFF_LIBDIR} ${PC_LIBTIFF_LIBRARY_DIRS} )
 
 # libelphelphg
-set(LIBELPHELPHG_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/elphelphg/libelphelphg.a)
+if (BUILD_SHARED_LIBS)
+  set(LIBELPHELPHG_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/elphelphg/libelphelphg.so)
+else()
+  set(LIBELPHELPHG_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/elphelphg/libelphelphg.a)
+endif()
 
 # includes
 include_directories(
@@ -77,6 +82,17 @@ include_directories(
   ${LIBXML2_INCLUDE_DIR}
   ${LIBBOOST_INCLUDE_DIR}
   ${LIBTIFF_INCLUDE_DIR}
+)
+
+# libraries
+set(LIBELPHELPHG_LIBRARY_LIST
+  ${LIBELPHELPHG_LIBRARY}
+  ${LIBXML2_LIBRARY}
+  ${LIBBOOST_SYSTEM_LIBRARY}
+  ${LIBBOOST_FILESYSTEM_LIBRARY}
+  ${LIBBOOST_REGEX_LIBRARY}
+  ${LIBTIFF_LIBRARY}
+  ${CMAKE_THREAD_LIBS_INIT}
 )
 
 # subdirectories

@@ -1,0 +1,11 @@
+
+mkdir build
+cd build
+cmake ../src -DCMAKE_BUILD_TYPE=Release
+make
+
+# cmake options:
+# build static libraries: -DBUILD_SHARED_LIBS=OFF 
+# set installation path:  -DCMAKE_INSTALL_PREFIX=/usr
+# verbose compiler ouput: -DCMAKE_VERBOSE_MAKEFILE  (alternatively, run "make VERBOSE=1")
+

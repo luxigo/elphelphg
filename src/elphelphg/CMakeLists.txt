@@ -9,8 +9,10 @@ add_library(elphelphg
   utils.cpp
   xml.cpp
 )
-install (TARGETS elphelphg DESTINATION lib)
-install (FILES
+
+install(TARGETS elphelphg DESTINATION lib)
+
+install(FILES
   cameraArray.hpp
   camera.hpp
   channel.hpp
