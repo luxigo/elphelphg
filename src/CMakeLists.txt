@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
-project("elphelphg")
+project(ElphelPHG C CXX)
 
 set(CMAKE_CXX_COMPILER g++)
+
+find_package(Threads)
 
 find_package(OpenMP)
 
@@ -13,11 +15,8 @@ endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR
     "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-
     set(warnings "-Wall -Wextra -Werror")
     set(cxx_flags "-std=c++11")
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    set(warnings "/W4 /WX /EHsc")
 endif()
 
 if (NOT CONFIGURED_ONCE)
@@ -27,36 +26,62 @@ if (NOT CONFIGURED_ONCE)
         CACHE STRING "Flags used by the compiler during all build types." FORCE)
 endif()
 
-#find_package(libxml2)
+set(LIBELPHELPHG_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/elphelphg)
+set(EXAMPLES_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/examples)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-  /usr/include/libxml2
+find_package(PkgConfig)
+
+# libxml2
+pkg_check_modules(PC_LIBXML QUIET libxml-2.0)
+set(LIBXML2_DEFINITIONS ${PC_LIBXML_CFLAGS_OTHER})
+
+find_path(LIBXML2_INCLUDE_DIR libxml/xpath.h
+          HINTS ${PC_LIBXML_INCLUDEDIR} ${PC_LIBXML_INCLUDE_DIRS}
+          PATH_SUFFIXES libxml2 )
+
+find_library(LIBXML2_LIBRARY NAMES xml2 libxml2
+             HINTS ${PC_LIBXML_LIBDIR} ${PC_LIBXML_LIBRARY_DIRS} )
+
+# libboost
+pkg_check_modules(PC_LIBBOOST QUIET libboost-filesystem)
+set(LIBBOOST_DEFINITIONS ${PC_LIBBOOST_CFLAGS_OTHER})
+
+find_path(LIBBOOST_INCLUDE_DIR boost/filesystem.hpp
+  HINTS ${PC_LIBBOOST_INCLUDEDIR} ${PC_LIBBOOST_INCLUDE_DIRS}
+          PATH_SUFFIXES boost )
+
+find_library(LIBBOOST_FILESYSTEM_LIBRARY NAMES boost_filesystem libboost_filesystem
+   HINTS ${PC_LIBBOOST_LIBDIR} ${PC_LIBBOOST_LIBRARY_DIRS} )
+find_library(LIBBOOST_SYSTEM_LIBRARY NAMES boost_system libboost_system
+   HINTS ${PC_LIBBOOST_LIBDIR} ${PC_LIBBOOST_LIBRARY_DIRS} )
+find_library(LIBBOOST_REGEX_LIBRARY NAMES boost_regex libboost_regex
+   HINTS ${PC_LIBBOOST_LIBDIR} ${PC_LIBBOOST_LIBRARY_DIRS} )
+
+# libtiff
+pkg_check_modules(PC_LIBTIFF QUIET libtiff)
+set(LIBTIFF_DEFINITIONS ${PC_LIBTIFF_CFLAGS_OTHER})
+
+find_path(LIBTIFF_INCLUDE_DIR tiff.h
+  HINTS ${PC_LIBTIFF_INCLUDEDIR} ${PC_LIBTIFF_INCLUDE_DIRS}
+  PATH_SUFFIXES libtiff )
+find_library(LIBTIFF_LIBRARY NAMES tiff libtiff
+  HINTS ${PC_LIBTIFF_LIBDIR} ${PC_LIBTIFF_LIBRARY_DIRS} )
+
+# libelphelphg
+set(LIBELPHELPHG_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/elphelphg/libelphelphg.a)
+
+# includes
+include_directories(
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${LIBELPHELPHG_SOURCE_DIR}
+  ${LIBXML2_INCLUDE_DIR}
+  ${LIBBOOST_INCLUDE_DIR}
+  ${LIBTIFF_INCLUDE_DIR}
 )
 
-add_library(elphelphg
-  cameraArray.cpp
-  camera.cpp
-  channel.cpp
-  eqrData.cpp
-  file.cpp
-  imagej_elphel_preferences.cpp
-  sensorData.cpp
-  utils.cpp
-  xml.cpp
-)
-
-install (TARGETS elphelphg DESTINATION lib)
-install (FILES
-  cameraArray.hpp
-  camera.hpp
-  channel.hpp
-  eqrData.hpp
-  file.hpp
-  imagej_elphel_preferences.hpp
-  sensorData.hpp
-  utils.hpp
-  xml.hpp
-  DESTINATION include/elphelphg)
+# subdirectories
+add_subdirectory(${LIBELPHELPHG_SOURCE_DIR})
+add_subdirectory(${EXAMPLES_SOURCE_DIR})
 
 set(CONFIGURED_ONCE TRUE CACHE INTERNAL
     "A flag showing that CMake has configured at least once.")
