@@ -6,7 +6,7 @@
 #include <exception>
 #include <stdlib.h>
 
-#include "elphelphg_cstub.h"
+#include "elphelphg_cstubs.h"
 
 CameraArray *e4pi;
 
