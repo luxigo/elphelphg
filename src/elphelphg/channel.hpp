@@ -53,7 +53,7 @@ public:
   std::string calibtiff;
   cimg_library::CImg<float> *eqrtiff_cimg;
   cimg_library::CImg<float> *calibtiff_cimg;
-  SensorData *sd;
+  SensorData *sensor;
   EqrData *eqr;
   int roll;
   int rotatedImageHeight;

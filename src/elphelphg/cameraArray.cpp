@@ -81,7 +81,7 @@ Camera *CameraArray::camera(int num) {
 
 Channel *CameraArray::channel(int num) {
 	for (std::vector<Channel*>::iterator channel=channel_list.begin(); channel!=channel_list.end(); ++channel) {
-		if (channel[0]->sd->channel==num) {
+		if (channel[0]->sensor->channel==num) {
 			return channel[0];
 		}
 	}

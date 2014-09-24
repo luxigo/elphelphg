@@ -62,7 +62,7 @@ Channel::Channel(CameraArray *array, unsigned int num) {
 
   // get sensor data
   this->calibtiff=prefs->calibtiff_dir+"/"+prefs->calibtiff_prefix+utils::to_string(num,2)+prefs->calibtiff_suffix;
-  this->sd=new SensorData((this->calibtiff+".xml").c_str());
+  this->sensor=new SensorData((this->calibtiff+".xml").c_str());
 
   // get eqr data
   this->eqrtiff=prefs->eqrtiff_dir+"/"+prefs->eqrtiff_prefix+utils::to_string(num,2)+prefs->eqrtiff_suffix;
@@ -71,13 +71,13 @@ Channel::Channel(CameraArray *array, unsigned int num) {
   this->getRotation();
   this->getLensCenterVector();
 
-  this->K[0]=sd->focalLength/(sd->pixelSize/1000.);
+  this->K[0]=sensor->focalLength/(sensor->pixelSize/1000.);
   this->K[1]=0;
-  this->K[2]=sd->px0;
+  this->K[2]=sensor->px0;
 
   this->K[3]=0;
-  this->K[4]=sd->focalLength/(sd->pixelSize/1000.);
-  this->K[5]=sd->py0;
+  this->K[4]=sensor->focalLength/(sensor->pixelSize/1000.);
+  this->K[5]=sensor->py0;
 
   this->K[6]=0;
   this->K[7]=0;
@@ -98,8 +98,8 @@ void Channel::getEQRPrincipalPoint(double *x0, double *y0) {
 
   for(y=0; y<height; ++y) {
     for(x=0; x<width; ++x) {
-      dx=calibtiff_cimg[0](x,y,0,0)-sd->px0;
-      dy=calibtiff_cimg[0](x,y,1,0)-sd->py0;
+      dx=calibtiff_cimg[0](x,y,0,0)-sensor->px0;
+      dy=calibtiff_cimg[0](x,y,1,0)-sensor->py0;
       dm=dx*dx+dy*dy;
       if (dm<=DM) {
         DM=dm;
@@ -144,8 +144,8 @@ void Channel::getEQRPrincipalPoint(double *x0, double *y0) {
 	  for(int i(0); i<9; ++i){
 		  double value[2] = {0,0};
 		  interpolateSubPix(*this->calibtiff_cimg,value,n,patch[2*i],patch[2*i+1]);
-		  map[2*i]   = value[0]-sd->px0;
-		  map[2*i+1] = value[1]-sd->py0;
+		  map[2*i]   = value[0]-sensor->px0;
+		  map[2*i+1] = value[1]-sensor->py0;
 	  }
 
 	  double error(1.0e10);
@@ -174,10 +174,10 @@ void Channel::getEQRPrincipalPoint(double *x0, double *y0) {
  * Compute rotation and translation in sensors coordinate
  */
 void Channel::getRotation(){
-  double elevation=rad(sd->elevation); //theta
-  double heading=rad(sd->heading); // phi
-  double azimuth=rad(sd->azimuth);
-  double psi=PI+rad(sd->roll);
+  double elevation=rad(sensor->elevation); //theta
+  double heading=rad(sensor->heading); // phi
+  double azimuth=rad(sensor->azimuth);
+  double psi=PI+rad(sensor->roll);
 
   /*
    * Converting from the sub-camera coordinates to the target coordinates
@@ -267,16 +267,16 @@ void  Channel::getKinv(){
  * @return (x,y,z)
  */
 void Channel::getLensCenterVector(){
-  double elevation=rad(sd->elevation); //theta
-  double heading=rad(sd->heading); // phi
-  double azimuth=rad(sd->azimuth);
+  double elevation=rad(sensor->elevation); //theta
+  double heading=rad(sensor->heading); // phi
+  double azimuth=rad(sensor->azimuth);
 
   /* 0) Translate by distance to entrance pupil (lens center)
       | Xc0 |   | 0                     |   |Xc|
       | Yc0 | = | 0                     | + |Yc|
       | Zc0 |   | entrancePupilForward  |   |Zc|
    */
-  Matx<double,3,1> T0(0,0,sd->entrancePupilForward);
+  Matx<double,3,1> T0(0,0,sensor->entrancePupilForward);
   /*
       2) rotate by - theta around C1X:Vc2= R2*Vc1
       | Xc2 |   |    1         0         0        |   |Xc1|
@@ -306,9 +306,9 @@ void Channel::getLensCenterVector(){
       | Zey |   |      r * cos (azimuth)       |   |Zc3|
    */
   Matx<double,3,1> T1(
-      sd->radius*sin(azimuth),
-      sd->height,
-      sd->radius*cos(azimuth)
+      sensor->radius*sin(azimuth),
+      sensor->height,
+      sensor->radius*cos(azimuth)
   );
 
   // MA=R3*R2;

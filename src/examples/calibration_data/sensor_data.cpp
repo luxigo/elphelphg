@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
   }
   try {
   CameraArray e4pi(CameraArray::EYESIS4PI_CAMERA,argv[1]);
-  std::cout << argv[2] << ": " << e4pi.channel(atoi(argv[3]))->sd->get(argv[2]) << std::endl;
+  std::cout << argv[2] << ": " << e4pi.channel(atoi(argv[3]))->sensor->get(argv[2]) << std::endl;
   } catch(std::exception &e) {
     std::cerr << e.what() << std::endl;
     return 1;
