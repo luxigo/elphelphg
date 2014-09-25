@@ -145,8 +145,8 @@ char **regexp(const char *re, int nmatch, const char *str) {
 
 }
 
-struct eyesisimagefile_info *eyesisimagefile_parsename(const char *filename) {
-	return (eyesisimagefile_info *) regexp(IMG_FILENAME_REGEX, 6, filename);
+struct imagefile_info *imagefile_parsename(const char *filename) {
+	return (imagefile_info *) regexp(IMG_FILENAME_REGEX, 6, filename);
 }
 
 int getFileList(std::vector<std::string> &fileList, const char *directory,

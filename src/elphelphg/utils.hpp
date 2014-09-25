@@ -47,7 +47,7 @@
 // dir, timestamp, channel, attributes list, extension
 #define IMG_FILENAME_REGEX "^(.*)/([0-9]+_[0-9]+)\\-([0-9]+)\\-([^\\.]+)\\.(.*)$"
 
-typedef struct eyesisimagefile_info {
+typedef struct imagefile_info {
   char *storage; // to free
   char *stringmatched; // unused
   char *dir;
@@ -55,7 +55,7 @@ typedef struct eyesisimagefile_info {
   char *channel;
   char *attributes;
   char *extension;
-} eyesisimagefile_info;
+} imagefile_info;
 
 namespace utils {
 //  template < typename T > std::string to_string( const T& v );
@@ -65,7 +65,7 @@ namespace utils {
   std::string basename(const std::string &filename);
 
   char **regexp(const char *re, int nmatch, const char *str);
-  struct eyesisimagefile_info *eyesisimagefile_parsename(const char *filename);
+  struct imagefile_info *imagefile_parsename(const char *filename);
   int getFileList(std::vector<std::string> &fileList,const char *directory, boost::regex *filter);
 }
 
