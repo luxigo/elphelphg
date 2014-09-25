@@ -33,6 +33,8 @@
 #ifndef EQRDATA_HPP_
 #define EQRDATA_HPP_
 
+namespace elphelphg {
+
 class Xml;
 
 class EqrData {
@@ -55,5 +57,7 @@ public:
   }
   double get(const char *property);
 };
+
+}
 
 #endif /* EQRDATA_HPP_ */

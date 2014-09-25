@@ -57,6 +57,7 @@ typedef struct imagefile_info {
   char *extension;
 } imagefile_info;
 
+namespace elphelphg {
 namespace utils {
 //  template < typename T > std::string to_string( const T& v );
   std::string to_string(const int& v);
@@ -68,5 +69,5 @@ namespace utils {
   struct imagefile_info *imagefile_parsename(const char *filename);
   int getFileList(std::vector<std::string> &fileList,const char *directory, boost::regex *filter);
 }
-
+}
 #endif /* UTILS_HPP_ */

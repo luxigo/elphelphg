@@ -41,6 +41,8 @@
 #include "utils.hpp"
 #include "sensorData.hpp"
 
+namespace elphelphg {
+
 CameraArray::CameraArray(camArrayType type,const char *prefs_path) {
 	this->type=type;
 	this->prefs=new ImageJ_Elphel_Preferences(prefs_path);
@@ -87,4 +89,6 @@ Channel *CameraArray::channel(int num) {
 	}
 	throw std::string("No such channel: ")+utils::to_string(num,2);
   return NULL;
+}
+
 }

@@ -39,6 +39,8 @@
 #include <libxml/xpathInternals.h>
 #include <string>
 
+namespace elphelphg {
+
 class Xml {
 	xmlDocPtr doc;
 	xmlXPathContextPtr ctx;
@@ -53,5 +55,7 @@ public:
 	std::string getString(const char *expr);
 
 };
+
+}
 
 #endif /* XML_HPP_ */

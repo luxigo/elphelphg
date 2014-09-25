@@ -34,6 +34,9 @@
 #define IMAGEJ_ELPHEL_PREFERENCES_HPP_
 
 #include <string>
+
+namespace elphelphg {
+
 class Xml;
 
 class ImageJ_Elphel_Preferences {
@@ -58,5 +61,6 @@ public:
 	double getDouble(const char *key);
 };
 
+}
 
 #endif /* IMAGEJ_ELPHEL_PREFERENCES_HPP_ */

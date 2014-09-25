@@ -33,6 +33,8 @@
 #ifndef SENSORDATA_HPP_
 #define SENSORDATA_HPP_
 
+namespace elphelphg {
+
 class Xml;
 
 class SensorData {
@@ -77,5 +79,7 @@ public:
 
   double get(const char *property);
 };
+
+}
 
 #endif /* SENSORDATA_HPP_ */

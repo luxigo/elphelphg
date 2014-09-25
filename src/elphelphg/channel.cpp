@@ -54,6 +54,8 @@
 using namespace cimg_library;
 using namespace cv;
 
+namespace elphelphg {
+
 Channel::Channel(CameraArray *array, unsigned int num) {
   ImageJ_Elphel_Preferences *prefs=array->prefs;
   if (num>array->channel_list.size()) {
@@ -353,4 +355,6 @@ double phi(int order, double u, double v, int i, int j){
 			value *= (v-v0-l+order/2)/ ( (double) (v0+l-j-order/2) ) ;
 
 	return value;
+}
+
 }

@@ -8,6 +8,8 @@
 
 #include "elphelphg_cstubs.h"
 
+using namespace elphelphg;
+
 CameraArray *e4pi;
 
 int phg_init(char *imagej_prefs_xml) {

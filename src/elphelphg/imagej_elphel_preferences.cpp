@@ -34,6 +34,8 @@
 #include "xml.hpp"
 #include "utils.hpp"
 
+namespace elphelphg {
+
 ImageJ_Elphel_Preferences::ImageJ_Elphel_Preferences(const char *path) {
 	this->xmlData = new Xml(path);
 	this->calibtiff_dir = this->getString(
@@ -71,4 +73,6 @@ std::string ImageJ_Elphel_Preferences::getString(const char *key) {
 double ImageJ_Elphel_Preferences::getDouble(const char *key) {
 	return this->xmlData->getDouble(
 			(std::string("/properties/entry[@key=\"") + key + "\"]").c_str());
+}
+
 }

@@ -35,6 +35,8 @@
 
 #include "file.hpp"
 
+namespace elphelphg {
+
  File::File(const char *path) {
 	this->path=std::string(path);
   FILE *f=fopen(path,"r");
@@ -58,4 +60,6 @@
     throw "file read error: "+this->path;
   }
   this->length=length;
+}
+
 }

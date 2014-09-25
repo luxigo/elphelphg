@@ -33,6 +33,8 @@
 #include "eqrData.hpp"
 #include "xml.hpp"
 
+namespace elphelphg {
+
 EqrData::EqrData(const char *path) {
   xmlData=new Xml(path);
   channel=get("channel");
@@ -50,4 +52,6 @@ EqrData::EqrData(const char *path) {
 double EqrData::get(const char *property) {
 	std::string expr=std::string("/properties//")+std::string(property);
 	return xmlData->getDouble(expr.c_str());
+}
+
 }

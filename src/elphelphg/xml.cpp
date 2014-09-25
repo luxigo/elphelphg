@@ -35,6 +35,8 @@
 
 #include <string.h>
 
+namespace elphelphg {
+
 Xml::Xml(const char *data, long length) {
  doc=xmlReadMemory(data,length, "", NULL, 0);
  if (doc == NULL) {
@@ -76,4 +78,6 @@ std::string Xml::getString(const char *expr) {
   std::string ret((const char*)stringval);
   xmlXPathFreeObject(obj);
   return ret;
+}
+
 }

@@ -48,6 +48,8 @@
 
 namespace fs = boost::filesystem;
 
+namespace elphelphg {
+
 namespace utils {
 
 std::string to_string(const int& v) {
@@ -168,5 +170,7 @@ int getFileList(std::vector<std::string> &fileList, const char *directory,
 		}
 	}
 	return 0;
+}
+
 }
 }

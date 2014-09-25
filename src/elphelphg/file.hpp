@@ -35,6 +35,8 @@
 
 #include <string>
 
+namespace elphelphg {
+
 class File {
 public:
 	std::string path;
@@ -45,5 +47,7 @@ public:
 		if (content) delete content;
 	}
 };
+
+}
 
 #endif /* FILE_HPP_ */

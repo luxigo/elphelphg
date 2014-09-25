@@ -34,8 +34,12 @@
 #include "camera.hpp"
 #include "imagej_elphel_preferences.hpp"
 
+namespace elphelphg {
+
 Camera::Camera(CameraArray *cameraArray,int &cam) {
 //  ImageJ_Elphel_Preferences *prefs=cameraArray->prefs;
   this->cameraArray=cameraArray;
   this->num=cam;
+}
+
 }

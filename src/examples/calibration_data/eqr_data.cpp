@@ -5,6 +5,8 @@
 #include <exception>
 #include <stdlib.h>
 
+using namespace elphelphg;
+
 int main(int argc, char **argv) {
   if (argc!=4) {
     std::cerr << "usage: " << argv[0] << " <imagej_config> <property> <channel>" << std::endl;

@@ -35,7 +35,9 @@
 
 #include <vector>
 
-class ImageJ_Elphel_Preferences;
+namespace elphelphg {
+
+  class ImageJ_Elphel_Preferences;
 class Camera;
 class Channel;
 
@@ -63,5 +65,7 @@ public:
   Channel *channel(int chan);
 
 };
+
+}
 
 #endif /* CAMERAARRAY_HPP_ */

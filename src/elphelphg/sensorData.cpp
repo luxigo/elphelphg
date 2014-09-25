@@ -32,6 +32,8 @@
 #include "sensorData.hpp"
 #include "xml.hpp"
 
+namespace elphelphg {
+
 SensorData::SensorData(const char *path) {
   xmlData=new Xml(path);
   subCamera=get("subcamera");
@@ -63,4 +65,6 @@ SensorData::SensorData(const char *path) {
 double SensorData::get(const char *property) {
 	std::string expr=std::string("/properties//")+property;
   return xmlData->getDouble(expr.c_str());
+}
+
 }

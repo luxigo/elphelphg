@@ -33,6 +33,8 @@
 #ifndef CAMERA_HPP_
 #define CAMERA_HPP_
 
+namespace elphelphg {
+
 class CameraArray;
 
 class Camera {
@@ -46,5 +48,6 @@ public:
 
 };
 
+}
 
 #endif /* CAMERA_HPP_ */
