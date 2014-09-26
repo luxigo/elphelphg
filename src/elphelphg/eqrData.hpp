@@ -50,6 +50,8 @@ public:
   double longitudeRight;
   double xPosition;
   double yPosition;
+  double x0;
+  double y0;
   double angularStep;
 
   EqrData(const char *path);
