@@ -185,10 +185,9 @@ void Channel::getRotation(){
 
   // symmetry aroud xz-plane
   Matx<double,3,3> Sy (
-    1.0,0,0
-    0,-1.0,0
-    0,0,1.0
-  );
+    1.0, 0.0,0.0,
+    0.0,-1.0,0.0,
+    0.0, 0.0,1.0 );
   
   /*
    * Converting from the sub-camera coordinates to the target coordinates
@@ -330,9 +329,9 @@ void Channel::getLensCenterVector(){
 
   // symmetry aroud xz-plane
   Matx<double,3,3> Sy (
-    1.0,0,0
-    0,-1.0,0
-    0,0,1.0
+    1.0, 0.0,0.0,
+    0.0,-1.0,0.0,
+    0.0, 0.0,1.0
   );
   
   Matx<double,3,1> result(Sy*T1+Sy*(R3*(R2*T0)));
