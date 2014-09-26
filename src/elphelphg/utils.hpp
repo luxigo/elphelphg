@@ -37,6 +37,9 @@
 #include <vector>
 #include <boost/regex.hpp>
 
+namespace elphelphg {
+namespace utils {
+
 #ifndef PI
 #define PI 3.1415926535897932384626433832795028841971693993751058209
 #endif
@@ -47,18 +50,16 @@
 // dir, timestamp, channel, attributes list, extension
 #define IMG_FILENAME_REGEX "^(.*)/([0-9]+_[0-9]+)\\-([0-9]+)\\-([^\\.]+)\\.(.*)$"
 
-typedef struct imagefile_info {
-  char *storage; // to free
-  char *stringmatched; // unused
-  char *dir;
-  char *timestamp;
-  char *channel;
-  char *attributes;
-  char *extension;
-} imagefile_info;
+  typedef struct imagefile_info {
+    char *storage; // to free
+    char *stringmatched; // unused
+    char *dir;
+    char *timestamp;
+    char *channel;
+    char *attributes;
+    char *extension;
+  } imagefile_info;
 
-namespace elphelphg {
-namespace utils {
 //  template < typename T > std::string to_string( const T& v );
   std::string to_string(const int& v);
   std::string to_string(const double& v);
