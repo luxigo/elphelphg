@@ -56,6 +56,8 @@ using namespace cv;
 
 namespace elphelphg {
 
+using namespace utils;
+
 Channel::Channel(CameraArray *array, unsigned int num) {
   ImageJ_Elphel_Preferences *prefs=array->prefs;
   if (num>array->channel_list.size()) {
