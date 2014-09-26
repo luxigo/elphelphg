@@ -37,15 +37,20 @@
 #include <vector>
 #include <boost/regex.hpp>
 
-namespace elphelphg {
-namespace utils {
-
 #ifndef PI
 #define PI 3.1415926535897932384626433832795028841971693993751058209
 #endif
-#define rad(x) ((x)*PI/180.)
-#define deg(x) ((x)*180./PI)
 
+inline double rad(double x) {
+  return x*PI/180.;
+}
+
+inline double deg(double x) {
+  return x*180./PI;
+}
+
+namespace elphelphg {
+namespace utils {
 
 // dir, timestamp, channel, attributes list, extension
 #define IMG_FILENAME_REGEX "^(.*)/([0-9]+_[0-9]+)\\-([0-9]+)\\-([^\\.]+)\\.(.*)$"
@@ -69,6 +74,7 @@ namespace utils {
   char **regexp(const char *re, int nmatch, const char *str);
   struct imagefile_info *imagefile_parsename(const char *filename);
   int getFileList(std::vector<std::string> &fileList,const char *directory, boost::regex *filter);
+
 }
 }
 #endif /* UTILS_HPP_ */
