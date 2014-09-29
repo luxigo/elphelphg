@@ -5,8 +5,16 @@ project(ElphelPHG C CXX)
 set(CMAKE_CXX_COMPILER g++)
 set(BUILD_SHARED_LIBS ON)
 
+# The project version number.
+set(VERSION_MAJOR   0   CACHE STRING "Project major version number.")
+set(VERSION_MINOR   0   CACHE STRING "Project minor version number.")
+set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
+mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
+
+# phtreads
 find_package(Threads)
 
+# OpenMP
 find_package(OpenMP)
 
 if (OPENMP_FOUND)
@@ -14,6 +22,7 @@ if (OPENMP_FOUND)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
+# Compiler flags
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR
     "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     set(warnings "-Wall -Wextra -Werror")
@@ -27,9 +36,11 @@ if (NOT CONFIGURED_ONCE)
         CACHE STRING "Flags used by the compiler during all build types." FORCE)
 endif()
 
+# source dirs
 set(LIBELPHELPHG_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/elphelphg)
 set(EXAMPLES_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/examples)
 
+# pkgconfig
 find_package(PkgConfig)
 
 # libxml2
@@ -98,6 +109,32 @@ set(LIBELPHELPHG_LIBRARY_LIST
 # subdirectories
 add_subdirectory(${LIBELPHELPHG_SOURCE_DIR})
 add_subdirectory(${EXAMPLES_SOURCE_DIR})
+
+# Doxygen documentation
+option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)" OFF)
+if(BUILD_DOCUMENTATION)
+  find_package(Doxygen)
+  option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
+
+  if(BUILD_DOCUMENTATION)
+    if(NOT DOXYGEN_FOUND)
+        message(FATAL_ERROR "Doxygen is needed to build the documentation.")
+    endif()
+
+    set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in)
+    set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile)
+
+    configure_file(${doxyfile_in} ${doxyfile} @ONLY)
+
+    add_custom_target(doc
+        COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM)
+
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION share/doc)
+  endif()
+endif()
 
 set(CONFIGURED_ONCE TRUE CACHE INTERNAL
     "A flag showing that CMake has configured at least once.")

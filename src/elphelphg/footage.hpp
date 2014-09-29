@@ -30,21 +30,52 @@
  *      Attribution" section of <http://foxel.ch/license>.
  */
 
-#include "cameraArray.hpp"
-#include "camera.hpp"
-#include "imagej_elphel_preferences.hpp"
+// Author(s):
+//
+//     Luc Deschenaux <l.deschenaux@foxel.ch>
+//
+
+
+#include <string>
+#include <vector>
+#include <set>
+
+#ifndef cimg_version
+#define cimg_use_tiff
+#define cimg_display 0
+#include <CImg.h>
+#endif
+
+#include "image.hpp"
 
 namespace elphelphg {
 
-/**
- * Camera constructor
- * @param cameraArray pointer to CameraArray object
- * @param cam camera index
- */
-Camera::Camera(CameraArray *cameraArray,int &cam) {
-//  ImageJ_Elphel_Preferences *prefs=cameraArray->prefs;
-  this->cameraArray=cameraArray;
-  this->num=cam;
-}
+class CameraArray;
+class Channel;
 
-}
+class Footage {
+public:
+  typedef Image **imageListT;
+
+  typedef std::pair<Image::timestampT,imageListT> cacheElemT;
+  typedef std::vector<cacheElemT> cacheT;
+  cacheT cache;
+
+  CameraArray &cameraArray;
+  std::string directoryPath;
+
+  Footage(
+    CameraArray *array,
+    const char *directoryPath
+  );
+
+  ~Footage() {
+  }
+
+  cimg_library::CImg<uint8_t> getImage(
+    const char *timestamp,
+    int channel,
+    Image::imageType type
+  );
+
+};

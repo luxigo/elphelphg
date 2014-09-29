@@ -49,12 +49,13 @@ class cameraArray;
 
 class Channel {
 public:
-  unsigned int num;
+  typedef int channelIndexT;
+  channelIndexT num;
   Camera *camera;
-  std::string eqrtiff;
-  std::string calibtiff;
-  cimg_library::CImg<float> *eqrtiff_cimg;
-  cimg_library::CImg<float> *calibtiff_cimg;
+  std::string eqrtiff_path;
+  std::string calibtiff_path;
+  cimg_library::CImg<float> *eqrtiff;
+  cimg_library::CImg<float> *calibtiff;
   SensorData *sensor;
   EqrData *eqr;
   int roll;
@@ -70,17 +71,30 @@ public:
   Channel(CameraArray *array, unsigned int num);
   ~Channel() {
   };
-  void setImagePath(const char *imagePath, const char *timestamp);
+  cimg_library::CImg<float> *getEqrMaps();
+  cimg_library::CImg<float> *getCalibMaps();
   void getEQRPrincipalPoint(double *x0, double *y0);
-  void eqrToRect_test();
   void getImageDimensions();
   void getRotation();
   void getKinv();
   void getLensCenterVector();
 };
 
-void interpolateSubPix(cimg_library::CImg<float> &calib,double (&value)[2], int order, double u, double v);
-double phi(int order, double u, double v, int i, int j);
+void interpolateSubPix(
+  cimg_library::CImg<float> *calib,
+  double (&value)[2],
+  int order,
+  double u,
+  double v
+);
+
+double phi(
+  int order,
+  double u,
+  double v,
+  int i,
+  int j
+);
 
 }
 
