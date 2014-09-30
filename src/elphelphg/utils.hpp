@@ -56,8 +56,7 @@ namespace utils {
 #define IMG_FILENAME_REGEX "^(.*)/([0-9]+_[0-9]+)\\-([0-9]+)\\-([^\\.]+)\\.(.*)$"
 
   typedef struct imagefile_info {
-    char *storage; // to free
-    char *stringmatched; // unused
+    char *absolutePath;
     char *dir;
     char *timestamp;
     char *channel;
@@ -72,7 +71,8 @@ namespace utils {
   std::string basename(const std::string &filename);
 
   char **regexp(const char *re, int nmatch, const char *str);
-  struct imagefile_info *imagefile_parsename(const char *filename);
+  struct imagefile_info *imagefile_parsename(const char *absolutePath);
+  void imagfileInfo_dispose(struct imagefile_info *fileInfo);
   int getFileList(std::vector<std::string> &fileList,const char *directory, boost::regex *filter);
 
 }

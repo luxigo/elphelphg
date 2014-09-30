@@ -56,6 +56,7 @@ std::string to_string(const int& v) {
 	std::ostringstream stm;
 	return (stm << v) ? stm.str() : "{*** error ***}";
 }
+
 std::string to_string(const double& v) {
 	std::ostringstream stm;
 	return (stm << v) ? stm.str() : "{*** error ***}";
@@ -84,11 +85,11 @@ std::string basename(const std::string &filename) {
 }
 
 /**
- * regexp
+ * regexp match regular exception and extract substrings
  * @param re extended POSIX regular expression
  * @param nmatch maximum number of matches
  * @param str string to match
- * @return An array of char pointers. You have to free() the first element (string storage). the second element is the string matching the full regex, then come the submatches.
+ * @return An array of char pointers. You have to free() every element. The first element is the string itself, then come the matches.
  */
 char **regexp(const char *re, int nmatch, const char *str) {
 	char **result;
@@ -97,23 +98,26 @@ char **regexp(const char *re, int nmatch, const char *str) {
 	regmatch_t *match;
 	int i;
 
+  // allocate memory for matches
 	match = (regmatch_t*) malloc(nmatch * sizeof(*match));
 	if (!match) {
 		fprintf(stderr, "Out of memory !");
 		return NULL;
 	}
 
+  // compile regex
 	if (regcomp(&regex, re, REG_EXTENDED) != 0) {
 		fprintf(stderr, "Failed to compile regex '%s'\n", re);
 		return NULL;
 	}
 
-	string = strdup(str);
+  string=strdup(str);
 	if (!string) {
 		fprintf(stderr, "Out of memory !");
 		return NULL;
 	}
 
+  // get matches
 	if (regexec(&regex, string, nmatch, match, 0)) {
 #ifdef DEBUG
 		fprintf(stderr, "String '%s' does not match regex '%s'\n",str,re);
@@ -122,19 +126,30 @@ char **regexp(const char *re, int nmatch, const char *str) {
 		return NULL;
 	}
 
-	result = (char**) malloc(sizeof(*result));
+  // allocate memory for return value (array of char*)
+	result = (char**) calloc(nmatch,sizeof(*result));
 	if (!result) {
 		fprintf(stderr, "Out of memory !");
 		free(string);
 		return NULL;
 	}
 
+  // extract substrings
 	for (i = 0; i < nmatch; ++i) {
-		if (match[i].rm_so >= 0) {
-			string[match[i].rm_eo] = 0;
-			((char**) result)[i] = string + match[i].rm_so;
+    regoff_t so=match[i].rm_so;
+		if (so >= 0) {
+      regoff_t eo=match[i].rm_eo;
+      // allocate storage for result and copy substring
+      char *storage=(char*)malloc(eo-so+1);
+      if (!storage) {
+        fprintf(stderr, "Out of memory !");
+        return NULL;
+      }
+      memcpy(storage, string+so, eo-so);
+      storage[eo-so]=0;
+			((char**)result)[i]=storage;
 #ifdef DEBUG
-			printf("%s\n",string+match[i].rm_so);
+			printf("%s\n",storage);
 #endif
 		} else {
 			((char**) result)[i] = (char*)"";
@@ -147,8 +162,31 @@ char **regexp(const char *re, int nmatch, const char *str) {
 
 }
 
-struct imagefile_info *imagefile_parsename(const char *filename) {
-	return (imagefile_info *) regexp(IMG_FILENAME_REGEX, 6, filename);
+/**
+ * imagefile_parsename Extract informations from Elphel PHG image file name
+ * @param absolutePath Absolute path of the file
+ * @param nmatch maximum number of matches
+ * @param str string to match
+ */
+struct imagefile_info *imagefile_parsename(const char *absolutePath) {
+	imagefile_info *fileInfo=(imagefile_info *) regexp(IMG_FILENAME_REGEX, 6, absolutePath);
+  if (fileInfo) {
+    for (int i=0; i<6; ++i) {
+      if (((char**)fileInfo)[i]==NULL) {
+        throw std::string("Error: unable to parse image absolute path ")+absolutePath;
+      }
+    }
+  } else {
+    throw std::string("Error: unable to parse image absolute path ")+absolutePath;
+  }
+  return fileInfo;
+}
+
+void imagefileInfo_dispose(struct imagefile_info *fileInfo) {
+  for (int i=0; i<6; ++i) {
+    if (((char**)fileInfo)[i]) free(((void**)fileInfo)[i]);
+  }
+  free(fileInfo);
 }
 
 int getFileList(std::vector<std::string> &fileList, const char *directory,
