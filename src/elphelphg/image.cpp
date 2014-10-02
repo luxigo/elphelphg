@@ -42,35 +42,27 @@
 #endif
  
 #include "image.hpp"
-
-using cimg_library;
+#include "footage.hpp"
+#include "utils.hpp"
 
 namespace elphelphg {
 
-Image::Image(
-  Footage &footage,
-  timestampT timestamp,
-  channelIndexT index,
-  const char *file_extension="tiff"
-) {
+Image::Image(Footage *footage, timestampT timestamp, channelIndexT index) {
   this->footage=footage;
   this->timestamp=timestamp;
   this->channel=index;
-  this->extension=std::string(file_extension);
+  this->file_extension=std::string(IMAGE_FILE_EXTENSION);
 
 };
 
-Image::~Image() {
-}
-
-CImg<uint8_t> *Image::get(imageType type){
+cimg_library::CImg<uint8_t> *Image::get(imageType type){
   std::string filename(
-    this->footage.directoryPath + "/" +
+    this->footage->directoryPath + "/" +
     this->timestamp +
-    "-" +this->channel + "-" +
+    "-" + utils::to_string(this->channel,2) + "-" +
     this->imageTypeStr[type] + "." + this->file_extension
   );
-  return new CImg<uint8_t>(filename);
+  return new cimg_library::CImg<uint8_t>(filename.c_str());
 }
 
 }

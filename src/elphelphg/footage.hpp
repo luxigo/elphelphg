@@ -35,6 +35,8 @@
 //     Luc Deschenaux <l.deschenaux@foxel.ch>
 //
 
+#ifndef FOOTAGE_HPP_
+#define FOOTAGE_HPP_
 
 #include <string>
 #include <vector>
@@ -77,3 +79,5 @@ public:
 };
 
 }
+
+#endif

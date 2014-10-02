@@ -35,14 +35,17 @@
 //     Luc Deschenaux <l.deschenaux@foxel.ch>
 //
 
-#include "utils.hpp"
-#include "footage.hpp"
-
+#include <string>
 #ifndef cimg_version
 #define cimg_use_tiff
 #define cimg_display 0
 #include <CImg.h>
 #endif
+
+#include "utils.hpp"
+#include "footage.hpp"
+#include "cameraArray.hpp"
+#include "image.hpp"
 
 namespace elphelphg {
 
@@ -69,22 +72,22 @@ Footage::Footage(CameraArray *array, const char *directoryPath) {
 cimg_library::CImg<uint8_t> *Footage::getImage(const char *timestamp, int channel,Image::imageType type) {
   Footage *footage=this;
   std::string t(timestamp);
-  if (channel>=footage->cameraArray.channel_list.length()) {
+  if ((unsigned int)channel>=footage->cameraArray->channel_list.size()) {
     throw std::string("Invalid channel number " + to_string(channel,2));
   }
-  ImageListT imageList=NULL;
+  imageListT imageList=NULL;
   for (cacheT::iterator cacheElem=footage->cache.begin(); cacheElem!=footage->cache.end(); ++cacheElem) {
-    if (cacheElem[0].first()!=t) {
+    if (cacheElem[0].first!=t) {
       continue;
     }
-    imageList=cacheElem[0].second();
+    imageList=cacheElem[0].second;
     if (!imageList[channel]) {
       imageList[channel]=new Image(footage,timestamp,channel);
     }
     break;
   }
   if (!imageList[channel]) {
-    imageList=new Image*[footage->cameraArray.channel_list.length()]();
+    imageList=new Image*[footage->cameraArray->channel_list.size()]();
     imageList[channel]=new Image(footage,timestamp,channel);
   }
   return imageList[channel]->get(type);

@@ -35,12 +35,18 @@
 //     Luc Deschenaux <l.deschenaux@foxel.ch>
 //
 
+#ifndef __IMAGE_HPP
+#define __IMAGE_HPP
+
+#include <string>
 
 #ifndef cimg_version
 #define cimg_use_tiff
 #define cimg_display 0
 #include <CImg.h>
 #endif         
+
+#define IMAGE_FILE_EXTENSION
 
 namespace elphelphg {
 
@@ -62,15 +68,12 @@ public:
     "DECONV-RGB24_EQR_GNO"
   };
 
-  Footage &footage;
+  Footage *footage;
   timestampT timestamp;
   channelIndexT channel;
+  std::string file_extension;
 
-  Image(
-    Footage &footage,
-    timestampT timestamp,
-    channelIndexT index
-  );
+  Image(Footage *footage, timestampT timestamp, channelIndexT index);
 
   ~Image() {
   }
@@ -79,3 +82,6 @@ public:
 
 };
 
+}
+
+#endif
