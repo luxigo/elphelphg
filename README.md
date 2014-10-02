@@ -2,6 +2,9 @@
 
 Elphel PHG cameras related development
 
+### Documentation
+
+A detailed documentation can be generated through doxygen. A more general documentation can be consulted on the [wiki](https://github.com/FoxelSA/elphelphg/wiki).
 
 ### Copyright
 
