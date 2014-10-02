@@ -35,10 +35,14 @@
 //     Luc Deschenaux <l.deschenaux@foxel.ch>
 //
 
-#include "footage.hpp"
 #include "utils.hpp"
+#include "footage.hpp"
 
-using namespace cimg_library;
+#ifndef cimg_version
+#define cimg_use_tiff
+#define cimg_display 0
+#include <CImg.h>
+#endif
 
 namespace elphelphg {
 
@@ -52,7 +56,7 @@ using namespace utils;
  */
 Footage::Footage(CameraArray *array, const char *directoryPath) {
   this->cameraArray=array;
-  this->directory=directoryPath;
+  this->directoryPath=directoryPath;
 }
 
 /**
@@ -62,7 +66,7 @@ Footage::Footage(CameraArray *array, const char *directoryPath) {
  * @param type Image type
  * @return Requested image
  */
-CImg<uint8_t> Footage::getImage(const char *timestamp, int channel,Image::imageType type) {
+cimg_library::CImg<uint8_t> *Footage::getImage(const char *timestamp, int channel,Image::imageType type) {
   Footage *footage=this;
   std::string t(timestamp);
   if (channel>=footage->cameraArray.channel_list.length()) {

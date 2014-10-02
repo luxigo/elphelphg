@@ -40,11 +40,7 @@
 #include <vector>
 #include <set>
 
-#ifndef cimg_version
-#define cimg_use_tiff
-#define cimg_display 0
-#include <CImg.h>
-#endif
+class CImg;
 
 #include "image.hpp"
 
@@ -61,7 +57,7 @@ public:
   typedef std::vector<cacheElemT> cacheT;
   cacheT cache;
 
-  CameraArray &cameraArray;
+  CameraArray *cameraArray;
   std::string directoryPath;
 
   Footage(
@@ -72,10 +68,12 @@ public:
   ~Footage() {
   }
 
-  cimg_library::CImg<uint8_t> getImage(
+  cimg_library::CImg<uint8_t> *getImage(
     const char *timestamp,
     int channel,
     Image::imageType type
   );
 
 };
+
+}

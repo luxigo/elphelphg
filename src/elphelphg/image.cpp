@@ -35,6 +35,13 @@
 //     Luc Deschenaux <l.deschenaux@foxel.ch>
 //
 
+#ifndef cimg_version
+#define cimg_use_tiff
+#define cimg_display 0
+#include <CImg.h>
+#endif
+ 
+#include "image.hpp"
 
 using cimg_library;
 
@@ -56,14 +63,14 @@ Image::Image(
 Image::~Image() {
 }
 
-CImg<uint8_t> Image::get(imageType type){
+CImg<uint8_t> *Image::get(imageType type){
   std::string filename(
     this->footage.directoryPath + "/" +
     this->timestamp +
     "-" +this->channel + "-" +
     this->imageTypeStr[type] + "." + this->file_extension
   );
-  return CImg<uint8_t>(filename);
+  return new CImg<uint8_t>(filename);
 }
 
 }

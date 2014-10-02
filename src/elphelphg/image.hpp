@@ -36,7 +36,11 @@
 //
 
 
-class CImg;
+#ifndef cimg_version
+#define cimg_use_tiff
+#define cimg_display 0
+#include <CImg.h>
+#endif         
 
 namespace elphelphg {
 
@@ -55,7 +59,7 @@ public:
 
   const char *imageTypeStr[2]={
     "DECONV-RGB24_EQR",
-    "DECONV-RGB24_EQR-GNO"
+    "DECONV-RGB24_EQR_GNO"
   };
 
   Footage &footage;
@@ -71,7 +75,7 @@ public:
   ~Image() {
   }
 
-  cimg_library::CImg<uint8_t> get(imageType type);
+  cimg_library::CImg<uint8_t> *get(imageType type);
 
 };
 
