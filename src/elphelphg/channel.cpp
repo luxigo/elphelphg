@@ -181,8 +181,14 @@ void Channel::getRotation(){
   double elevation=rad(sensor->elevation); //theta
   double heading=rad(sensor->heading); // phi
   double azimuth=rad(sensor->azimuth);
-  double psi=PI+rad(sensor->roll);
+  double psi=rad(sensor->roll);
 
+  // symmetry aroud xz-plane
+  Matx<double,3,3> Sy (
+    1.0, 0.0,0.0,
+    0.0,-1.0,0.0,
+    0.0, 0.0,1.0 );
+  
   /*
    * Converting from the sub-camera coordinates to the target coordinates
  	0) rotate by -psi around CZ: Vc1= R1*Vc
@@ -220,7 +226,7 @@ void Channel::getRotation(){
   );
 
   // 3) R = R2*R1*R0 transform sensor coordinate to world coordinate
-  Matx<double,3,3> Rtemp(R2*R1*R0);
+  Matx<double,3,3> Rtemp(Sy*(R2*(R1*(R0*Sy))));
 
   R[0] = Rtemp(0,0);
   R[1] = Rtemp(1,0);
@@ -321,7 +327,14 @@ void Channel::getLensCenterVector(){
   //       Matrix MB=T1.plus(R3.times(R2.times(T0)));
   //       double [] aB=T1.plus(R3.times(R2.times(T0))).getRowPackedCopy();
 
-  Matx<double,3,1> result(T1+(R3*(R2*T0)));
+  // symmetry aroud xz-plane
+  Matx<double,3,3> Sy (
+    1.0, 0.0,0.0,
+    0.0,-1.0,0.0,
+    0.0, 0.0,1.0
+  );
+  
+  Matx<double,3,1> result(Sy*T1+Sy*(R3*(R2*T0)));
   lensCenterVector[0]=result.val[0];
   lensCenterVector[1]=result.val[1];
   lensCenterVector[2]=result.val[2];
