@@ -164,27 +164,33 @@ char **regexp(const char *re, int nmatch, const char *str) {
 
 /**
  * imagefile_parsename Extract informations from Elphel PHG image file name
- * @param absolutePath Absolute path of the file
- * @param nmatch maximum number of matches
- * @param str string to match
+ * @param filePath image file path
+ * @return pointer to struct imagefile_info
  */
-struct imagefile_info *imagefile_parsename(const char *absolutePath) {
-	imagefile_info *fileInfo=(imagefile_info *) regexp(IMG_FILENAME_REGEX, 6, absolutePath);
+struct imagefile_info *imagefile_parsename(const char *filePath) {
+	imagefile_info *fileInfo=(imagefile_info *) regexp(IMG_FILENAME_REGEX, IMG_FILENAME_REGEX_NMATCH, filePath);
   if (fileInfo) {
-    for (int i=0; i<6; ++i) {
+    for (int i=0; i<IMG_FILENAME_REGEX_NMATCH; ++i) {
       if (((char**)fileInfo)[i]==NULL) {
-        throw std::string("Error: unable to parse image absolute path ")+absolutePath;
+        throw std::string("Error: unable to parse image file path ")+filePath;
       }
     }
   } else {
-    throw std::string("Error: unable to parse image absolute path ")+absolutePath;
+    throw std::string("Error: unable to parse image file path ")+filePath;
   }
   return fileInfo;
 }
 
+/**
+ * imagefileInfo_dispose free memory
+ * @param fileInfo pointer to struct imagefile_info 
+ */
 void imagefileInfo_dispose(struct imagefile_info *fileInfo) {
-  for (int i=0; i<6; ++i) {
-    if (((char**)fileInfo)[i]) free(((void**)fileInfo)[i]);
+  for (int i=0; i<IMG_FILENAME_REGEX_NMATCH; ++i) {
+    if (((char**)fileInfo)[i]) {
+      free(((void**)fileInfo)[i]);
+      ((void**)fileInfo)[i]=NULL;
+    }
   }
   free(fileInfo);
 }
