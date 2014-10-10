@@ -77,36 +77,80 @@ std::string Image::getFilename(imageType type) {
 
 /** Image::get return specified image type
  * @param type image type, see image.hpp
- * @return image pointer
+ * @param image pointer to return image pointer
  */
-template <typename _imageType>
-_imageType *Image::get(imageType type){
+template <typename imagePointer>
+int Image::get(imageType type, imagePointer *image){
+
   std::string &filename=this->getFilename(type);
-  if (type > SENSOR) {
-    if (!utils::exists(filename.c_str())) {
-//      return this->convertTo(type);
-    }
+
+  // convert image if needed
+  if (!utils::exists(filename.c_str())) {
+    return this->convertTo(type, image);
   }
-  return this->load<_imageType>(filename);
+
+  return this->load(filename, image);
 }
 
-template <typename _imageType>
-cimg_library::CImg<uint8_t> *Image::load(std::string &filename){
-  return new cimg_library::CImg<uint8_t>(filename.c_str());
+/** Image::load return specified image type
+ * @param filename image file name
+ * @param image pointer to return image pointer
+ * @return non null on error
+ */
+int Image::load(std::string &filename,IplImage **image){
+  *image=cvLoadImage(filename.c_str(), CV_LOAD_IMAGE_COLOR);
+  return *image!=NULL;
 }
 
-/*
-cimg_library::CImg<uint8_t> *Image::convertTo(imageType type) {
-  return new cimg_library::CImg<uint8_t>("");
-  //return NULL;
-}
-*/
-IplImage *Image::load(std::string &filename){
-  return cvLoadImage(filename.c_str(), CV_LOAD_IMAGE_COLOR);                                                                              
+int Image::load(std::string &filename, cimg_library::CImg<uint8_t> **image) {
+  *image=new cimg_library::CImg<uint8_t>(filename.c_str());
+  return *image!=NULL;
 }
 
-IplImage *Image::convertTo(imageType type) {
-  return cvLoadImage("", CV_LOAD_IMAGE_COLOR);                                                                              
+/** Image::save save image
+ * @param filename image file name
+ * @param image pointer to image
+ * @return on error return non-null or throw an exception
+ */
+int Image::save(std::string &filename,IplImage *image){
+  return cvSaveImage(filename.c_str(), image);
 }
+
+int Image::save(std::string &filename, cimg_library::CImg<uint8_t> *image) {
+  image->save(filename.c_str());
+  return 0;
 }
+
+/** Image::convertTo compute specified image type
+ * @param type target image type, see image.hpp
+ * @return non null on error
+ */
+template <typename imagePointer>
+int Image::convertTo(imageType type, imagePointer *image){
+
+  std::string &filename=this->getFilename(type);
+
+  switch(type) {
+  case SENSOR:
+  case EQR:
+  case RECT_SENSOR:
+  case RECT_CONFOC:
+  default:
+    throw std::string("error: conversion from SENSOR to EQR needs to be implemented");
+    break;
+  }
+  return 0;
+} 
+
+/** Image::convertTo compute and save the specified image type
+ * @param type target image type, see image.hpp
+ * @return non null on error
+ */
+int Image::convertTo(imageType type, std::string &filename) {
+  IplImage *image;
+  this->get(type,image);
+  return this->save(filename,image);
+}
+
+} // namespace elphelphg
 

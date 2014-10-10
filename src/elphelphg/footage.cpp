@@ -63,34 +63,60 @@ Footage::Footage(CameraArray *array, const char *directoryPath) {
 }
 
 /**
- * Get a given image from this footage
+ * Footage::getImage Get a given image from this footage
  * @param timestamp Image timestamp
  * @param channel Channel index
  * @param type Image type
- * @return Requested image
+ * @param image Pointer to requested image
  */
-cimg_library::CImg<uint8_t> *Footage::getImage(const char *timestamp, int channel,Image::imageType type) {
+template <typename imageType>
+int Footage::getImage(const char *timestamp, int channel,Image::imageType type, imageType *image) {
+
   Footage *footage=this;
   std::string t(timestamp);
+
+  // assert channel number
   if ((unsigned int)channel>=footage->cameraArray->channel_list.size()) {
     throw std::string("Invalid channel number " + to_string(channel,2));
   }
+
+  // find timestamp in footage imageList cache
   imageListT imageList=NULL;
   for (cacheT::iterator cacheElem=footage->cache.begin(); cacheElem!=footage->cache.end(); ++cacheElem) {
+
     if (cacheElem[0].first!=t) {
       continue;
     }
+
     imageList=cacheElem[0].second;
+
     if (!imageList[channel]) {
+      // no Image object for channel in cached imageList
+      // instantiate and cache Image for this timestamp/channel pair
       imageList[channel]=new Image(footage,timestamp,channel);
     }
+
     break;
   }
-  if (!imageList[channel]) {
+
+  if (!imageList) {
+    // timestamp not found in cache
+   
+    // instantiate imageList for this timestamp
     imageList=new Image*[footage->cameraArray->channel_list.size()]();
+    cacheElemT cache_entry=std::make_pair(timestamp,imageList);
+
+    // add to cache
+    footage->cache.push_back(cache_entry);
+
+    // instantiate channel Image object for this timestamp/channel pair
     imageList[channel]=new Image(footage,timestamp,channel);
   }
-  return imageList[channel]->get(type);
+
+  // return the requested image pointer
+  imageList[channel]->get(type,image);
+
+  return *image!=NULL;
 }
 
 }

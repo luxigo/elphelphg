@@ -88,14 +88,24 @@ public:
   }
 
   std::string getFilename(imageType type);
+
   cimg_library::CImg<uint8_t> *get(imageType type);
-  template <typename _imageType>
-  _imageType *get(imageType type);
-  template <typename _imageType>
-  _imageType *load(std::string &filename);
-//  cimg_library::CImg<uint8_t> *load(std::string &filename);
- // cimg_library::CImg<uint8_t> *convertTo(imageType type);
-  IplImage *convertTo(imageType type);
+
+  template <typename imagePointer>
+  int get(imageType type, imagePointer *image);
+
+  template <typename imagePointer>
+  int load(std::string &filename, imagePointer *image);
+  int load(std::string &filename, IplImage **image);
+  int load(std::string &filename, cimg_library::CImg<uint8_t> **image);
+
+  int save(std::string &filename, IplImage *image);
+  int save(std::string &filename, cimg_library::CImg<uint8_t> *image);
+
+  template <typename imagePointer>
+  int convertTo(imageType type, imagePointer *image);
+
+  int convertTo(imageType type, std::string &filename);
 
 };
 

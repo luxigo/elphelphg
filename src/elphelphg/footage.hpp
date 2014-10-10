@@ -53,9 +53,12 @@ class Channel;
 
 class Footage {
 public:
-  typedef Image **imageListT;
 
-  typedef std::pair<Image::timestampT,imageListT> cacheElemT;
+  // array of channel's image object instances array
+  typedef Image **imageListT;  
+
+  // cache to store image object instance lists per channel for this footage
+  typedef std::pair<Image::timestampT,imageListT> cacheElemT; 
   typedef std::vector<cacheElemT> cacheT;
   cacheT cache;
 
@@ -70,10 +73,12 @@ public:
   ~Footage() {
   }
 
-  cimg_library::CImg<uint8_t> *getImage(
+  template <typename imageType>
+  int getImage(
     const char *timestamp,
     int channel,
-    Image::imageType type
+    Image::imageType type,
+    imageType *image
   );
 
 };
