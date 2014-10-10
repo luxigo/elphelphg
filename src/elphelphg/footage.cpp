@@ -45,7 +45,7 @@
 #include "utils.hpp"
 #include "footage.hpp"
 #include "cameraArray.hpp"
-#include "image.hpp"
+#include "tile.hpp"
 
 namespace elphelphg {
 
@@ -63,14 +63,12 @@ Footage::Footage(CameraArray *array, const char *directoryPath) {
 }
 
 /**
- * Footage::getImage Get a given image from this footage
+ * Footage::getTile get a Tile object from cache, or instantiate one
  * @param timestamp Image timestamp
  * @param channel Channel index
  * @param type Image type
- * @param image Pointer to requested image
  */
-template <typename imageType>
-int Footage::getImage(const char *timestamp, int channel,Image::imageType type, imageType *image) {
+void Footage::getTile(const char *timestamp, int channel, Tile **tile) {
 
   Footage *footage=this;
   std::string t(timestamp);
@@ -80,43 +78,61 @@ int Footage::getImage(const char *timestamp, int channel,Image::imageType type, 
     throw std::string("Invalid channel number " + to_string(channel,2));
   }
 
-  // find timestamp in footage imageList cache
-  imageListT imageList=NULL;
+  // find timestamp in footage tileList cache
+  tileListT tileList=NULL;
   for (cacheT::iterator cacheElem=footage->cache.begin(); cacheElem!=footage->cache.end(); ++cacheElem) {
 
     if (cacheElem[0].first!=t) {
       continue;
     }
 
-    imageList=cacheElem[0].second;
+    tileList=cacheElem[0].second;
 
-    if (!imageList[channel]) {
-      // no Image object for channel in cached imageList
-      // instantiate and cache Image for this timestamp/channel pair
-      imageList[channel]=new Image(footage,timestamp,channel);
+    if (!tileList[channel]) {
+      // no Tile object for channel in cached tileList 
+      // instantiate and cache Tile for this timestamp/channel pair
+      tileList[channel]=new Tile(footage,timestamp,channel);
     }
 
     break;
   }
 
-  if (!imageList) {
+  if (!tileList) {
     // timestamp not found in cache
    
-    // instantiate imageList for this timestamp
-    imageList=new Image*[footage->cameraArray->channel_list.size()]();
-    cacheElemT cache_entry=std::make_pair(timestamp,imageList);
+    // instantiate tileList for this timestamp
+    tileList=new Tile*[footage->cameraArray->channel_list.size()]();
+    cacheElemT cache_entry=std::make_pair(timestamp,tileList);
 
     // add to cache
     footage->cache.push_back(cache_entry);
 
-    // instantiate channel Image object for this timestamp/channel pair
-    imageList[channel]=new Image(footage,timestamp,channel);
+    // instantiate channel Tile object for this timestamp/channel pair
+    tileList[channel]=new Tile(footage,timestamp,channel);
   }
 
+  *tile=tileList[channel];
+
+} // Footage::getTile
+
+/**
+ * Footage::getImage Get a given image from this footage
+ * @param timestamp Image timestamp
+ * @param channel Channel index
+ * @param type Image type
+ * @param image Pointer to requested image
+ */
+template <typename imageType>
+void Footage::getImage(const char *timestamp, int channel, Tile::tileType type, imageType *image) {
+
+  Footage *footage=this;
+
+  Tile *tile;
+  footage->getTile(timestamp,channel,&tile);
+
   // return the requested image pointer
-  imageList[channel]->get(type,image);
+  tile->getImage(type,image);
 
-  return *image!=NULL;
-}
+} // Footage::getImage
 
-}
+} // namespace elphelphg

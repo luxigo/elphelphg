@@ -65,58 +65,61 @@ Tile::Tile(Footage *footage, timestampT timestamp, channelIndexT channelIndex) {
  * @param type tile type, see image.hpp
  * @return tile file name
  */
-std::string Tile::getFilename(tileType type) {
-  return std::string(
-    this->footage->directoryPath + "/" +
-    this->timestamp +
-    "-" + utils::to_string(this->channel,2) + "-" +
-    this->imageTypeStr[type] + "." + this->file_extension
+void Tile::getFilename(tileType type,std::string &filename) {
+  Tile *tile=this;
+  filename.assign(
+    std::string(tile->footage->directoryPath) +
+    tile->timestamp +
+    "-" + utils::to_string(tile->channel,2) + "-" +
+    tile->tileTypeStr[type] + "." + tile->file_extension
   );
-
 };
 
-/** Tile::get return specified tile type
- * @param type tile type, see tile.hpp
- * @param image pointer to return image pointer
+/** Tile::getImage return specified tile image type
+ * @param type tile image type, see tile.hpp
+ * @param image pointer to requested image pointer
  */
 template <typename imagePointer>
-int Tile::get(tileType type, imagePointer *image){
+int Tile::getImage(tileType type, imagePointer *image){
 
-  std::string &filename=this->getFilename(type);
+  Tile *tile=this;
+  std::string filename;
+  
+  tile->getFilename(type,filename);
 
   // convert tile if needed
   if (!utils::exists(filename.c_str())) {
-    return this->convertTo(type, image);
+    return tile->convertTo(type, image);
   }
 
-  return this->load(filename, image);
+  return tile->loadImage(filename, image);
 }
 
-/** Tile::load return specified tile type
- * @param filename tile file name
- * @param image pointer to return image pointer
+/** Tile::loadImage load specified image
+ * @param filename image file name
+ * @param image pointer to requested image pointer
  * @return non null on error
  */
-int Tile::load(std::string &filename,IplImage **image){
+int Tile::loadImage(std::string &filename,IplImage **image){
   *image=cvLoadImage(filename.c_str(), CV_LOAD_IMAGE_COLOR);
   return *image!=NULL;
 }
 
-int Tile::load(std::string &filename, cimg_library::CImg<uint8_t> **image) {
+int Tile::loadImage(std::string &filename, cimg_library::CImg<uint8_t> **image) {
   *image=new cimg_library::CImg<uint8_t>(filename.c_str());
   return *image!=NULL;
 }
 
-/** Tile::save save tile
- * @param filename tile file name
+/** Tile::saveImage save image
+ * @param filename image file name
  * @param image pointer to image
  * @return on error return non-null or throw an exception
  */
-int Tile::save(std::string &filename,IplImage *image){
+int Tile::saveImage(std::string &filename,IplImage *image){
   return cvSaveImage(filename.c_str(), image);
 }
 
-int Tile::save(std::string &filename, cimg_library::CImg<uint8_t> *image) {
+int Tile::saveImage(std::string &filename, cimg_library::CImg<uint8_t> *image) {
   image->save(filename.c_str());
   return 0;
 }
@@ -128,7 +131,10 @@ int Tile::save(std::string &filename, cimg_library::CImg<uint8_t> *image) {
 template <typename imagePointer>
 int Tile::convertTo(tileType type, imagePointer *image){
 
-  std::string &filename=this->getFilename(type);
+  Tile *tile=this;
+  std::string filename;
+
+  tile->getFilename(type,filename);
 
   switch(type) {
   case SENSOR:
@@ -136,7 +142,8 @@ int Tile::convertTo(tileType type, imagePointer *image){
   case RECT_SENSOR:
   case RECT_CONFOC:
   default:
-    throw std::string("error: conversion from SENSOR to EQR needs to be implemented");
+    image=image;
+    throw std::string("error: tile conversion requested needs to be implemented");
     break;
   }
   return 0;
@@ -147,9 +154,12 @@ int Tile::convertTo(tileType type, imagePointer *image){
  * @return non null on error
  */
 int Tile::convertTo(tileType type, std::string &filename) {
+  Tile *tile=this;
   IplImage *image;
-  this->get(type,image);
-  return this->save(filename,image);
+
+  tile->getImage(type,&image);
+
+  return this->saveImage(filename,image);
 }
 
 } // namespace elphelphg

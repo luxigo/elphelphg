@@ -80,7 +80,7 @@ namespace utils {
   void imagfileInfo_dispose(struct imagefile_info *fileInfo);
   int getFileList(std::vector<std::string> &fileList,const char *directory, boost::regex *filter);
 
-  inline bool exists(char *filename) {
+  inline bool exists(const char *filename) {
     struct stat buf;
     return stat(filename,&buf)==0;
   }

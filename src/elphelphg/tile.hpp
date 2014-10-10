@@ -87,20 +87,18 @@ public:
   ~Tile() {
   }
 
-  std::string getFilename(tileType type);
-
-  cimg_library::CImg<uint8_t> *get(tileType type);
+  void getFilename(tileType type,std::string &filename);
 
   template <typename imagePointer>
-  int get(tileType type, imagePointer *image);
+  int getImage(tileType type, imagePointer *image);
 
   template <typename imagePointer>
-  int load(std::string &filename, imagePointer *image);
-  int load(std::string &filename, IplImage **image);
-  int load(std::string &filename, cimg_library::CImg<uint8_t> **image);
+  int loadImage(std::string &filename, imagePointer *image);
+  int loadImage(std::string &filename, IplImage **image);
+  int loadImage(std::string &filename, cimg_library::CImg<uint8_t> **image);
 
-  int save(std::string &filename, IplImage *image);
-  int save(std::string &filename, cimg_library::CImg<uint8_t> *image);
+  int saveImage(std::string &filename, IplImage *image);
+  int saveImage(std::string &filename, cimg_library::CImg<uint8_t> *image);
 
   template <typename imagePointer>
   int convertTo(tileType type, imagePointer *image);
