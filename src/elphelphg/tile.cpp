@@ -41,7 +41,7 @@
 #include <CImg.h>
 #endif
  
-#include "image.hpp"
+#include "tile.hpp"
 #include "footage.hpp"
 #include "utils.hpp"
 
@@ -49,23 +49,23 @@ using namespace cv;
 
 namespace elphelphg {
 
-/** Image::Image Image constructor
+/** Tile::Tile Tile constructor
  * @param footage footage pointer
- * @param timestamp image timestamp
+ * @param timestamp tile timestamp
  * @param channelIndex channel index
  */
-Image::Image(Footage *footage, timestampT timestamp, channelIndexT channelIndex) {
+Tile::Tile(Footage *footage, timestampT timestamp, channelIndexT channelIndex) {
   this->footage=footage;
   this->timestamp=timestamp;
   this->channel=channelIndex;
   this->file_extension=std::string(IMAGE_FILE_EXTENSION);
 }
 
-/** Image::getFilename get filename for specified image type
- * @param type image type, see image.hpp
- * @return image file name
+/** Tile::getFilename get filename for specified tile type
+ * @param type tile type, see image.hpp
+ * @return tile file name
  */
-std::string Image::getFilename(imageType type) {
+std::string Tile::getFilename(tileType type) {
   return std::string(
     this->footage->directoryPath + "/" +
     this->timestamp +
@@ -75,16 +75,16 @@ std::string Image::getFilename(imageType type) {
 
 };
 
-/** Image::get return specified image type
- * @param type image type, see image.hpp
+/** Tile::get return specified tile type
+ * @param type tile type, see tile.hpp
  * @param image pointer to return image pointer
  */
 template <typename imagePointer>
-int Image::get(imageType type, imagePointer *image){
+int Tile::get(tileType type, imagePointer *image){
 
   std::string &filename=this->getFilename(type);
 
-  // convert image if needed
+  // convert tile if needed
   if (!utils::exists(filename.c_str())) {
     return this->convertTo(type, image);
   }
@@ -92,41 +92,41 @@ int Image::get(imageType type, imagePointer *image){
   return this->load(filename, image);
 }
 
-/** Image::load return specified image type
- * @param filename image file name
+/** Tile::load return specified tile type
+ * @param filename tile file name
  * @param image pointer to return image pointer
  * @return non null on error
  */
-int Image::load(std::string &filename,IplImage **image){
+int Tile::load(std::string &filename,IplImage **image){
   *image=cvLoadImage(filename.c_str(), CV_LOAD_IMAGE_COLOR);
   return *image!=NULL;
 }
 
-int Image::load(std::string &filename, cimg_library::CImg<uint8_t> **image) {
+int Tile::load(std::string &filename, cimg_library::CImg<uint8_t> **image) {
   *image=new cimg_library::CImg<uint8_t>(filename.c_str());
   return *image!=NULL;
 }
 
-/** Image::save save image
- * @param filename image file name
+/** Tile::save save tile
+ * @param filename tile file name
  * @param image pointer to image
  * @return on error return non-null or throw an exception
  */
-int Image::save(std::string &filename,IplImage *image){
+int Tile::save(std::string &filename,IplImage *image){
   return cvSaveImage(filename.c_str(), image);
 }
 
-int Image::save(std::string &filename, cimg_library::CImg<uint8_t> *image) {
+int Tile::save(std::string &filename, cimg_library::CImg<uint8_t> *image) {
   image->save(filename.c_str());
   return 0;
 }
 
-/** Image::convertTo compute specified image type
- * @param type target image type, see image.hpp
+/** Tile::convertTo compute specified tile type
+ * @param type target tile type, see tile.hpp
  * @return non null on error
  */
 template <typename imagePointer>
-int Image::convertTo(imageType type, imagePointer *image){
+int Tile::convertTo(tileType type, imagePointer *image){
 
   std::string &filename=this->getFilename(type);
 
@@ -142,11 +142,11 @@ int Image::convertTo(imageType type, imagePointer *image){
   return 0;
 } 
 
-/** Image::convertTo compute and save the specified image type
- * @param type target image type, see image.hpp
+/** Tile::convertTo compute and save the specified tile type
+ * @param type target tile type, see tile.hpp
  * @return non null on error
  */
-int Image::convertTo(imageType type, std::string &filename) {
+int Tile::convertTo(tileType type, std::string &filename) {
   IplImage *image;
   this->get(type,image);
   return this->save(filename,image);

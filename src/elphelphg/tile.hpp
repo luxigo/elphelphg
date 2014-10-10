@@ -56,7 +56,7 @@ namespace elphelphg {
 
 class Footage;
 
-class Image {
+class Tile {
 public:
 
   typedef std::string timestampT;
@@ -67,11 +67,11 @@ public:
     EQR,
     RECT_SENSOR,
     RECT_CONFOC,
-    imageTypeCount
+    tileTypeCount
 
-  } imageType;
+  } tileType;
 
-  const char *imageTypeStr[imageTypeCount]={
+  const char *tileTypeStr[tileTypeCount]={
     "DECONV-RGB24_EQR",
     "RECT-SENSOR",
     "RECT-CONFOC"
@@ -82,17 +82,17 @@ public:
   channelIndexT channel;
   std::string file_extension;
 
-  Image(Footage *footage, timestampT timestamp, channelIndexT index);
+  Tile(Footage *footage, timestampT timestamp, channelIndexT index);
 
-  ~Image() {
+  ~Tile() {
   }
 
-  std::string getFilename(imageType type);
+  std::string getFilename(tileType type);
 
-  cimg_library::CImg<uint8_t> *get(imageType type);
+  cimg_library::CImg<uint8_t> *get(tileType type);
 
   template <typename imagePointer>
-  int get(imageType type, imagePointer *image);
+  int get(tileType type, imagePointer *image);
 
   template <typename imagePointer>
   int load(std::string &filename, imagePointer *image);
@@ -103,9 +103,9 @@ public:
   int save(std::string &filename, cimg_library::CImg<uint8_t> *image);
 
   template <typename imagePointer>
-  int convertTo(imageType type, imagePointer *image);
+  int convertTo(tileType type, imagePointer *image);
 
-  int convertTo(imageType type, std::string &filename);
+  int convertTo(tileType type, std::string &filename);
 
 };
 
