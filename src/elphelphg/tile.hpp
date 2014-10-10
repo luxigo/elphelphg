@@ -77,10 +77,19 @@ public:
     "RECT-CONFOC"
   };
 
+  typedef enum {
+   IPLIMAGE,
+   CIMG_uint8
+  } imageFormat;
+
   Footage *footage;
   timestampT timestamp;
   channelIndexT channel;
   std::string file_extension;
+
+  // cache to store tile images
+  typedef std::pair<imageFormat,void*> imageT;
+  imageT *image[tileTypeCount]={};
 
   Tile(Footage *footage, timestampT timestamp, channelIndexT index);
 
@@ -90,12 +99,17 @@ public:
   void getFilename(tileType type,std::string &filename);
 
   template <typename imagePointer>
-  int getImage(tileType type, imagePointer *image);
+  void getImage(tileType type, imagePointer *image);
 
   template <typename imagePointer>
-  int loadImage(std::string &filename, imagePointer *image);
-  int loadImage(std::string &filename, IplImage **image);
-  int loadImage(std::string &filename, cimg_library::CImg<uint8_t> **image);
+  void loadImage(tileType type, std::string &filename, imagePointer *image);
+  void loadImage(tileType type, std::string &filename, IplImage **image);
+  void loadImage(tileType type, std::string &filename, cimg_library::CImg<uint8_t> **image);
+
+  template <typename imagePointer>
+  void getImageFromCache(tileType type, imagePointer **image);
+  void getImageFromCache(tileType type, IplImage **image);
+  void getImageFromCache(tileType type, cimg_library::CImg<uint8_t> **image);
 
   int saveImage(std::string &filename, IplImage *image);
   int saveImage(std::string &filename, cimg_library::CImg<uint8_t> *image);

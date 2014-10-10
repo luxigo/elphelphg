@@ -75,24 +75,30 @@ void Tile::getFilename(tileType type,std::string &filename) {
   );
 };
 
-/** Tile::getImage return specified tile image type
+/** Tile::getImage load return specified tile image type
  * @param type tile image type, see tile.hpp
  * @param image pointer to requested image pointer
  */
 template <typename imagePointer>
-int Tile::getImage(tileType type, imagePointer *image){
+void Tile::getImage(tileType type, imagePointer *image){
 
   Tile *tile=this;
+
+  if  (tile->image[type]) {
+    getImageFromCache(type,image);
+    return;
+  }
+
   std::string filename;
-  
   tile->getFilename(type,filename);
 
   // convert tile if needed
   if (!utils::exists(filename.c_str())) {
-    return tile->convertTo(type, image);
+    tile->convertTo(type, image);
+    return;
   }
 
-  return tile->loadImage(filename, image);
+  tile->loadImage(type, filename, image);
 }
 
 /** Tile::loadImage load specified image
@@ -100,14 +106,30 @@ int Tile::getImage(tileType type, imagePointer *image){
  * @param image pointer to requested image pointer
  * @return non null on error
  */
-int Tile::loadImage(std::string &filename,IplImage **image){
+void Tile::loadImage(tileType type, std::string &filename,IplImage **image){
   *image=cvLoadImage(filename.c_str(), CV_LOAD_IMAGE_COLOR);
-  return *image!=NULL;
+  if (this->image[type]) delete this->image[type];
+  this->image[type]=new imageT(IPLIMAGE,*image);
 }
 
-int Tile::loadImage(std::string &filename, cimg_library::CImg<uint8_t> **image) {
+void Tile::loadImage(tileType type, std::string &filename, cimg_library::CImg<uint8_t> **image) {
   *image=new cimg_library::CImg<uint8_t>(filename.c_str());
-  return *image!=NULL;
+  if (this->image[type]) delete this->image[type];
+  this->image[type]=new imageT(CIMG_uint8,*image);
+}
+
+void Tile::getImageFromCache(tileType type, IplImage **image) {
+  if (this->image[type]->first!=IPLIMAGE) {
+    throw std::string("trying to read wrong image format from cache");
+  }
+  *image=(IplImage*)this->image[type]->second;
+}
+
+void Tile::getImageFromCache(tileType type, cimg_library::CImg<uint8_t> **image) {
+  if (this->image[type]->first!=CIMG_uint8) {
+    throw std::string("trying to read wrong image format from cache");
+  }
+  *image=(cimg_library::CImg<uint8_t>*)this->image[type]->second;
 }
 
 /** Tile::saveImage save image
