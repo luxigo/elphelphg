@@ -5,6 +5,8 @@ project(ElphelPHG C CXX)
 set(CMAKE_CXX_COMPILER g++)
 set(BUILD_SHARED_LIBS ON)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 # The project version number.
 set(VERSION_MAJOR   0   CACHE STRING "Project major version number.")
 set(VERSION_MINOR   0   CACHE STRING "Project minor version number.")
@@ -116,7 +118,7 @@ add_subdirectory(${LIBELPHELPHG_SOURCE_DIR})
 add_subdirectory(${EXAMPLES_SOURCE_DIR})
 
 # Doxygen documentation
-option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)" OFF)
+option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)" ON)
 if(BUILD_DOCUMENTATION)
   find_package(Doxygen)
   option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
@@ -137,7 +139,7 @@ if(BUILD_DOCUMENTATION)
         COMMENT "Generating API documentation with Doxygen"
         VERBATIM)
 
-    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION share/doc)
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/html DESTINATION share/doc)
   endif()
 endif()
 
