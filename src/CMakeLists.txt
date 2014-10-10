@@ -11,6 +11,9 @@ set(VERSION_MINOR   0   CACHE STRING "Project minor version number.")
 set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
+# opencv   
+find_package(OpenCV REQUIRED)
+
 # phtreads
 find_package(Threads)
 
@@ -93,6 +96,7 @@ include_directories(
   ${LIBXML2_INCLUDE_DIR}
   ${LIBBOOST_INCLUDE_DIR}
   ${LIBTIFF_INCLUDE_DIR}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 # libraries
@@ -103,6 +107,7 @@ set(LIBELPHELPHG_LIBRARY_LIST
   ${LIBBOOST_FILESYSTEM_LIBRARY}
   ${LIBBOOST_REGEX_LIBRARY}
   ${LIBTIFF_LIBRARY}
+  ${OpenCV_LIBS}
   ${CMAKE_THREAD_LIBS_INIT}
 )
 
