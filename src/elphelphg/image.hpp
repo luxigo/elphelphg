@@ -40,6 +40,10 @@
 
 #include <string>
 
+#include <opencv/cv.h>                    
+#include <opencv2/highgui/highgui_c.h>    
+#include <opencv2/imgcodecs/imgcodecs_c.h>                                                                                                                    
+
 #ifndef cimg_version
 #define cimg_use_tiff
 #define cimg_display 0
@@ -59,13 +63,18 @@ public:
   typedef int channelIndexT;
 
   typedef enum {
+    SENSOR,
     EQR,
-    GNO
+    RECT_SENSOR,
+    RECT_CONFOC,
+    imageTypeCount
+
   } imageType;
 
-  const char *imageTypeStr[2]={
+  const char *imageTypeStr[imageTypeCount]={
     "DECONV-RGB24_EQR",
-    "DECONV-RGB24_EQR_GNO"
+    "RECT-SENSOR",
+    "RECT-CONFOC"
   };
 
   Footage *footage;
@@ -78,10 +87,18 @@ public:
   ~Image() {
   }
 
+  std::string getFilename(imageType type);
   cimg_library::CImg<uint8_t> *get(imageType type);
+  template <typename _imageType>
+  _imageType *get(imageType type);
+  template <typename _imageType>
+  _imageType *load(std::string &filename);
+//  cimg_library::CImg<uint8_t> *load(std::string &filename);
+ // cimg_library::CImg<uint8_t> *convertTo(imageType type);
+  IplImage *convertTo(imageType type);
 
 };
 
-}
+};
 
 #endif
