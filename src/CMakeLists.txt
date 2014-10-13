@@ -5,11 +5,16 @@ project(ElphelPHG C CXX)
 set(CMAKE_CXX_COMPILER g++)
 set(BUILD_SHARED_LIBS ON)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 # The project version number.
 set(VERSION_MAJOR   0   CACHE STRING "Project major version number.")
 set(VERSION_MINOR   0   CACHE STRING "Project minor version number.")
 set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
+
+# opencv   
+find_package(OpenCV REQUIRED)
 
 # phtreads
 find_package(Threads)
@@ -93,6 +98,7 @@ include_directories(
   ${LIBXML2_INCLUDE_DIR}
   ${LIBBOOST_INCLUDE_DIR}
   ${LIBTIFF_INCLUDE_DIR}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 # libraries
@@ -103,6 +109,7 @@ set(LIBELPHELPHG_LIBRARY_LIST
   ${LIBBOOST_FILESYSTEM_LIBRARY}
   ${LIBBOOST_REGEX_LIBRARY}
   ${LIBTIFF_LIBRARY}
+  ${OpenCV_LIBS}
   ${CMAKE_THREAD_LIBS_INIT}
 )
 
@@ -111,7 +118,7 @@ add_subdirectory(${LIBELPHELPHG_SOURCE_DIR})
 add_subdirectory(${EXAMPLES_SOURCE_DIR})
 
 # Doxygen documentation
-option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)" OFF)
+option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)" ON)
 if(BUILD_DOCUMENTATION)
   find_package(Doxygen)
   option(BUILD_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
@@ -132,7 +139,7 @@ if(BUILD_DOCUMENTATION)
         COMMENT "Generating API documentation with Doxygen"
         VERBATIM)
 
-    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION share/doc)
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/html DESTINATION share/doc)
   endif()
 endif()
 

@@ -36,6 +36,10 @@
 #include <string>
 #include <vector>
 #include <boost/regex.hpp>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 
 #ifndef PI
 #define PI 3.1415926535897932384626433832795028841971693993751058209
@@ -53,10 +57,11 @@ namespace elphelphg {
 namespace utils {
 
 // dir, timestamp, channel, attributes list, extension
-#define IMG_FILENAME_REGEX "^(.*)/([0-9]+_[0-9]+)\\-([0-9]+)\\-([^\\.]+)\\.(.*)$"
+#define IMG_FILENAME_REGEX "^(.*/)?([0-9]+_[0-9]+)\\-([0-9]+)\\-([^\\.]+)\\.(.*)$"
+#define IMG_FILENAME_REGEX_NMATCH 6
 
   typedef struct imagefile_info {
-    char *absolutePath;
+    char *filePath;
     char *dir;
     char *timestamp;
     char *channel;
@@ -71,9 +76,14 @@ namespace utils {
   std::string basename(const std::string &filename);
 
   char **regexp(const char *re, int nmatch, const char *str);
-  struct imagefile_info *imagefile_parsename(const char *absolutePath);
+  struct imagefile_info *imagefile_parsename(const char *filePath);
   void imagfileInfo_dispose(struct imagefile_info *fileInfo);
   int getFileList(std::vector<std::string> &fileList,const char *directory, boost::regex *filter);
+
+  inline bool exists(const char *filename) {
+    struct stat buf;
+    return stat(filename,&buf)==0;
+  }
 
 }
 }

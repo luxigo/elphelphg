@@ -44,7 +44,7 @@
 
 class CImg;
 
-#include "image.hpp"
+#include "tile.hpp"
 
 namespace elphelphg {
 
@@ -53,9 +53,12 @@ class Channel;
 
 class Footage {
 public:
-  typedef Image **imageListT;
 
-  typedef std::pair<Image::timestampT,imageListT> cacheElemT;
+  // array of channel's tile object instances array
+  typedef Tile **tileListT;  
+
+  // cache to store tile object instance lists per channel for this footage
+  typedef std::pair<Tile::timestampT,tileListT> cacheElemT; 
   typedef std::vector<cacheElemT> cacheT;
   cacheT cache;
 
@@ -70,10 +73,18 @@ public:
   ~Footage() {
   }
 
-  cimg_library::CImg<uint8_t> *getImage(
+  void getTile(
     const char *timestamp,
     int channel,
-    Image::imageType type
+    Tile **tile
+  );
+
+  template <typename imageType>
+  void getImage(
+    const char *timestamp,
+    int channel,
+    Tile::tileType type,
+    imageType *image
   );
 
 };

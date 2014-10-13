@@ -9,7 +9,7 @@ add_library(elphelphg
   utils.cpp
   xml.cpp
   footage.cpp
-  image.cpp
+  tile.cpp
 )
 
 install(TARGETS elphelphg DESTINATION lib)
@@ -25,7 +25,7 @@ install(FILES
   utils.hpp
   xml.hpp
   footage.hpp
-  image.hpp
+  tile.hpp
   DESTINATION include/elphelphg)
 
 # Generate and install pkgconfig file

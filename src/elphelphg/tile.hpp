@@ -40,6 +40,10 @@
 
 #include <string>
 
+#include <opencv/cv.h>                    
+#include <opencv2/highgui/highgui_c.h>    
+#include <opencv2/imgcodecs/imgcodecs_c.h>                                                                                                                    
+
 #ifndef cimg_version
 #define cimg_use_tiff
 #define cimg_display 0
@@ -52,36 +56,71 @@ namespace elphelphg {
 
 class Footage;
 
-class Image {
+class Tile {
 public:
 
   typedef std::string timestampT;
   typedef int channelIndexT;
 
   typedef enum {
+    SENSOR,
     EQR,
-    GNO
-  } imageType;
+    RECT_SENSOR,
+    RECT_CONFOC,
+    tileTypeCount
 
-  const char *imageTypeStr[2]={
+  } tileType;
+
+  const char *tileTypeStr[tileTypeCount]={
     "DECONV-RGB24_EQR",
-    "DECONV-RGB24_EQR_GNO"
+    "RECT-SENSOR",
+    "RECT-CONFOC"
   };
+
+  typedef enum {
+   IPLIMAGE,
+   CIMG_uint8
+  } imageFormat;
 
   Footage *footage;
   timestampT timestamp;
   channelIndexT channel;
   std::string file_extension;
 
-  Image(Footage *footage, timestampT timestamp, channelIndexT index);
+  // cache to store tile images
+  typedef std::pair<imageFormat,void*> imageT;
+  imageT *image[tileTypeCount]={};
 
-  ~Image() {
+  Tile(Footage *footage, timestampT timestamp, channelIndexT index);
+
+  ~Tile() {
   }
 
-  cimg_library::CImg<uint8_t> *get(imageType type);
+  void getFilename(tileType type,std::string &filename);
+
+  template <typename imagePointer>
+  void getImage(tileType type, imagePointer *image);
+
+  template <typename imagePointer>
+  void loadImage(tileType type, std::string &filename, imagePointer *image);
+  void loadImage(tileType type, std::string &filename, IplImage **image);
+  void loadImage(tileType type, std::string &filename, cimg_library::CImg<uint8_t> **image);
+
+  template <typename imagePointer>
+  void getImageFromCache(tileType type, imagePointer **image);
+  void getImageFromCache(tileType type, IplImage **image);
+  void getImageFromCache(tileType type, cimg_library::CImg<uint8_t> **image);
+
+  int saveImage(std::string &filename, IplImage *image);
+  int saveImage(std::string &filename, cimg_library::CImg<uint8_t> *image);
+
+  template <typename imagePointer>
+  int convertTo(tileType type, imagePointer *image);
+
+  int convertTo(tileType type, std::string &filename);
 
 };
 
-}
+};
 
 #endif
