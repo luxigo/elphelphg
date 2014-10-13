@@ -46,8 +46,6 @@ EqrData::EqrData(const char *path) {
   longitudeRight=get("longitudeRight");
   xPosition=get("XPosition");
   yPosition=get("YPosition");
-  x0=get("x0");
-  y0=get("y0");
   angularStep=360./imageFullWidth;
 }
 
