@@ -30,21 +30,65 @@
  *      Attribution" section of <http://foxel.ch/license>.
  */
 
-#include "cameraArray.hpp"
-#include "camera.hpp"
-#include "imagej_elphel_preferences.hpp"
+// Author(s):
+//
+//     Luc Deschenaux <l.deschenaux@foxel.ch>
+//
+
+#ifndef FOOTAGE_HPP_
+#define FOOTAGE_HPP_
+
+#include <string>
+#include <vector>
+#include <set>
+
+class CImg;
+
+#include "tile.hpp"
 
 namespace elphelphg {
 
-/**
- * Camera constructor
- * @param cameraArray pointer to CameraArray object
- * @param cam camera index
- */
-Camera::Camera(CameraArray *cameraArray,int &cam) {
-//  ImageJ_Elphel_Preferences *prefs=cameraArray->prefs;
-  this->cameraArray=cameraArray;
-  this->num=cam;
-}
+class CameraArray;
+class Channel;
+
+class Footage {
+public:
+
+  // array of channel's tile object instances array
+  typedef Tile **tileListT;  
+
+  // cache to store tile object instance lists per channel for this footage
+  typedef std::pair<Tile::timestampT,tileListT> cacheElemT; 
+  typedef std::vector<cacheElemT> cacheT;
+  cacheT cache;
+
+  CameraArray *cameraArray;
+  std::string directoryPath;
+
+  Footage(
+    CameraArray *array,
+    const char *directoryPath
+  );
+
+  ~Footage() {
+  }
+
+  void getTile(
+    const char *timestamp,
+    int channel,
+    Tile **tile
+  );
+
+  template <typename imageType>
+  void getImage(
+    const char *timestamp,
+    int channel,
+    Tile::tileType type,
+    imageType *image
+  );
+
+};
 
 }
+
+#endif

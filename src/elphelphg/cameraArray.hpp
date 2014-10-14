@@ -37,7 +37,7 @@
 
 namespace elphelphg {
 
-  class ImageJ_Elphel_Preferences;
+class ImageJ_Elphel_Preferences;
 class Camera;
 class Channel;
 

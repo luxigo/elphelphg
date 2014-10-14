@@ -43,12 +43,20 @@
 
 namespace elphelphg {
 
+/**  
+ * CameraArray constructor
+ * @param type camera Array Type
+ * @param prefs_path imagej xml preferences path
+ */  
 CameraArray::CameraArray(camArrayType type,const char *prefs_path) {
 	this->type=type;
 	this->prefs=new ImageJ_Elphel_Preferences(prefs_path);
 	this->init();
 }
 
+/**  
+ * CameraArray destructor
+ */  
 CameraArray::~CameraArray(){
   delete prefs;
 	for (std::vector<Channel*>::iterator channel=channel_list.begin(); channel!=channel_list.end(); ++channel) {
@@ -59,6 +67,10 @@ CameraArray::~CameraArray(){
   }
 }
 
+/**
+ * CameraArray::init
+ * Initialize channels (sensors) and cameras
+ */
 void CameraArray::init() {
   ImageJ_Elphel_Preferences *prefs=this->prefs;
 	// Init channels
@@ -71,6 +83,11 @@ void CameraArray::init() {
   }
 }
 
+/**
+ * CameraArray::camera
+ * @param num camera index
+ * @return Camera object pointer
+ */
 Camera *CameraArray::camera(int num) {
 	for (std::vector<Camera*>::iterator camera=camera_list.begin(); camera!=camera_list.end(); ++camera) {
 		if (camera[0]->num==num) {
@@ -81,6 +98,11 @@ Camera *CameraArray::camera(int num) {
   return NULL;
 }
 
+/**
+ * CameraArray::channel
+ * @param num channel index
+ * @return Channel object pointer
+ */
 Channel *CameraArray::channel(int num) {
 	for (std::vector<Channel*>::iterator channel=channel_list.begin(); channel!=channel_list.end(); ++channel) {
 		if (channel[0]->sensor->channel==num) {

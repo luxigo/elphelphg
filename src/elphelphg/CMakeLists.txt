@@ -8,6 +8,8 @@ add_library(elphelphg
   sensorData.cpp
   utils.cpp
   xml.cpp
+  footage.cpp
+  tile.cpp
 )
 
 install(TARGETS elphelphg DESTINATION lib)
@@ -22,6 +24,8 @@ install(FILES
   sensorData.hpp
   utils.hpp
   xml.hpp
+  footage.hpp
+  tile.hpp
   DESTINATION include/elphelphg)
 
 # Generate and install pkgconfig file

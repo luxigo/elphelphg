@@ -58,6 +58,11 @@ namespace elphelphg {
 
 using namespace utils;
 
+/**
+ * Channel constructor
+ * @param array CameraArray pointer
+ * @param num channel index
+ */
 Channel::Channel(CameraArray *array, unsigned int num) {
   ImageJ_Elphel_Preferences *prefs=array->prefs;
   if (num>array->channel_list.size()) {
@@ -65,16 +70,18 @@ Channel::Channel(CameraArray *array, unsigned int num) {
   }
 
   // get sensor data
-  this->calibtiff=prefs->calibtiff_dir+"/"+prefs->calibtiff_prefix+utils::to_string(num,2)+prefs->calibtiff_suffix;
-  this->sensor=new SensorData((this->calibtiff+".xml").c_str());
+  this->calibtiff_path=prefs->calibtiff_dir+"/"+prefs->calibtiff_prefix+utils::to_string(num,2)+prefs->calibtiff_suffix;
+  this->sensor=new SensorData((this->calibtiff_path+".xml").c_str());
 
   // get eqr data
-  this->eqrtiff=prefs->eqrtiff_dir+"/"+prefs->eqrtiff_prefix+utils::to_string(num,2)+prefs->eqrtiff_suffix;
-  this->eqr=new EqrData((this->eqrtiff+".xml").c_str());
+  this->eqrtiff_path=prefs->eqrtiff_dir+"/"+prefs->eqrtiff_prefix+utils::to_string(num,2)+prefs->eqrtiff_suffix;
+  this->eqr=new EqrData((this->eqrtiff_path+".xml").c_str());
 
+  // set rig channel extrinsics parameters
   this->getRotation();
   this->getLensCenterVector();
 
+  // set intrinsics parameters
   this->K[0]=sensor->focalLength/(sensor->pixelSize/1000.);
   this->K[1]=0;
   this->K[2]=sensor->px0;
@@ -88,12 +95,37 @@ Channel::Channel(CameraArray *array, unsigned int num) {
   this->K[8]=1;
 }
 
-void Channel::getEQRPrincipalPoint(double *x0, double *y0) {
-  if (!this->calibtiff_cimg) {
-    this->calibtiff_cimg=new CImg<float>(this->calibtiff.c_str());
+/**
+ * getCalibMaps
+ * @return Calibration map pointer
+ */
+CImg<float> *Channel::getCalibMaps() {
+  if (!this->calibtiff) {
+    this->calibtiff=new CImg<float>(this->calibtiff_path.c_str());
   }
-  int height=calibtiff_cimg->height();
-  int width=calibtiff_cimg->width();
+  return this->calibtiff;
+}
+
+/**
+ * getEqrMaps
+ * @return Equirectangular map pointer
+ */
+CImg<float> *Channel::getEqrMaps() {
+  if (!this->eqrtiff) {
+    this->eqrtiff=new CImg<float>(this->eqrtiff_path.c_str());
+  }
+  return this->eqrtiff;
+}
+
+/**
+ * Map principal point coordinates from sensor to eqr projection coordinate system
+ * @param x0 storage address for the horizontal component of the principal point coordinates in the equirectangular projection coordinates system.
+ * @param y0 storage address for the vertical component of the principal point coordinates in the equirectangular projection coordinates system.
+ */
+void Channel::getEQRPrincipalPoint(double *x0, double *y0) {
+  CImg<float> *calibtiff=this->getCalibMaps();
+  int height=calibtiff->height();
+  int width=calibtiff->width();
   int x,y;
   int X;
   int Y;
@@ -102,8 +134,8 @@ void Channel::getEQRPrincipalPoint(double *x0, double *y0) {
 
   for(y=0; y<height; ++y) {
     for(x=0; x<width; ++x) {
-      dx=calibtiff_cimg[0](x,y,0,0)-sensor->px0;
-      dy=calibtiff_cimg[0](x,y,1,0)-sensor->py0;
+      dx=calibtiff[0](x,y,0,0)-sensor->px0;
+      dy=calibtiff[0](x,y,1,0)-sensor->py0;
       dm=dx*dx+dy*dy;
       if (dm<=DM) {
         DM=dm;
@@ -142,12 +174,9 @@ void Channel::getEQRPrincipalPoint(double *x0, double *y0) {
 	  double map[18];
 
 	  // interpolate mapping and compute difference
-    if (!this->calibtiff_cimg) {
-      this->calibtiff_cimg=new CImg<float>(this->calibtiff.c_str());
-    }
 	  for(int i(0); i<9; ++i){
 		  double value[2] = {0,0};
-		  interpolateSubPix(*this->calibtiff_cimg,value,n,patch[2*i],patch[2*i+1]);
+		  interpolateSubPix(this->calibtiff,value,n,patch[2*i],patch[2*i+1]);
 		  map[2*i]   = value[0]-sensor->px0;
 		  map[2*i+1] = value[1]-sensor->py0;
 	  }
@@ -272,9 +301,7 @@ void  Channel::getKinv(){
 }
 
 /**
- * Calculate sensor entrance pupil coordinates in camera coordinate system
- * @param chn sensor number
- * @return (x,y,z)
+ * Compute entrance pupil coordinates in camera coordinate system
  */
 void Channel::getLensCenterVector(){
   double elevation=rad(sensor->elevation); //theta
@@ -341,15 +368,19 @@ void Channel::getLensCenterVector(){
 
 }
 
-void interpolateSubPix(CImg<float> &calib,double (&value)[2], int order, double u, double v){
+/**
+ * interpolateSubPix
+ * @param calib
+ */
+void interpolateSubPix(CImg<float> *calib,double (&value)[2], int order, double u, double v){
 
 	int u0 = floor(u);
 	int v0 = floor(v);
 
 	for(int i(0); i< order; ++i)
 		for( int j(0); j< order; ++j){
-			value[0] += phi(order,u,v,u0+i-order/2,v0+j-order/2)*calib(u0+i-order/2,v0+j-order/2,0,0);
-			value[1] += phi(order,u,v,u0+i-order/2,v0+j-order/2)*calib(u0+i-order/2,v0+j-order/2,1,0);
+			value[0] += phi(order,u,v,u0+i-order/2,v0+j-order/2)*calib[0](u0+i-order/2,v0+j-order/2,0,0);
+			value[1] += phi(order,u,v,u0+i-order/2,v0+j-order/2)*calib[0](u0+i-order/2,v0+j-order/2,1,0);
 		}
 }
 
